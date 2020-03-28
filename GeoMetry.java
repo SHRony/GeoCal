@@ -442,6 +442,27 @@ public class GeoMetry {
         return II;
     }
     
+     /**
+     * Draw a circle passing through given 3 points
+     * @param A
+     * @param B
+     * @param C
+     * @return the circle passing through A,B,C point
+     */
+    public static Circle Circle3Point(Point A, Point B, Point C)
+    {
+        Circle c = new Circle();
+        Equation AB = GeoMetry.make_eqn(A, B);
+        Equation BC = GeoMetry.make_eqn(C, B);
+        Equation I = GeoMetry.perpendicularEqn(AB, GeoMetry.mid(A, B));
+        Equation II = GeoMetry.perpendicularEqn(BC, GeoMetry.mid(C, B));
+        Point p = GeoMetry.solve_eqn(I, II);
+        c.setCenterX(p.getX());
+        c.setCenterY(p.getY());
+        c.setRadius(GeoMetry.distance(p, A));
+        return c;
+    }
+    
     
     
     public static void main(String[] args) {
