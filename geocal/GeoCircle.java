@@ -18,8 +18,9 @@ import javafx.stage.Stage;
 public class GeoCircle extends Circle{
 
     static final int TOTAL = 600;
-    static private int i_c = 1, click;
-    static Point point[] = new Point[TOTAL];
+    static private int i_c = 1;
+    public static int click;
+    public static Point point[] = new Point[TOTAL];
     int ID;
 
 
