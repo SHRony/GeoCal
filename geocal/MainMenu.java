@@ -88,7 +88,22 @@ public class MainMenu extends Application{
         //point menu
         Menu pt = new Menu("Point");
         MenuItem mid = new MenuItem("Mid Point");
-        pt.getItems().addAll(mid);
+        MenuItem draw = new MenuItem("Draw Points");
+        pt.getItems().addAll(draw,mid);
+        
+        draw.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                GeoPoint.Draw_Point(layout);
+            }
+        });
+        
+        mid.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                GeoPoint.Mid_Point(layout);
+            }
+        });
 
         //vector menu
         Menu vec = new Menu("Vector");
