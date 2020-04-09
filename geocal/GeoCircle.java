@@ -1,14 +1,15 @@
 package geocal;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Side;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -24,6 +25,10 @@ public class GeoCircle extends Circle{
     static final int TOTAL = 600;
     public static int click;
     public static Point point[] = new Point[TOTAL];
+    public static Map<Integer, GeoCircle> map = new HashMap();
+    public static List<Integer> temp = new ArrayList<Integer>();
+    public List<Integer> ids = new ArrayList<Integer>();
+    public static Integer id =0;
     SmallMenu menu;
     
     GeoCircle()
@@ -55,6 +60,9 @@ public class GeoCircle extends Circle{
         GeoCircle cc = new GeoCircle(pp);
         cc.setRadius(2);
         cc.setFill(Color.BLUE);
+        map.put(id, cc);
+        temp.add(id);
+        id++;
         layout.chld.getChildren().addAll(cc, cc.menu.getLabel());
         cc.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -89,7 +97,12 @@ public class GeoCircle extends Circle{
             point[i] = new Point();
         }    
     }
-
+    
+    public static void setCircle(GeoCircle geo)
+    {
+        geo.ids.addAll(temp);
+        temp.clear();
+    }
 
 
     /**
@@ -128,9 +141,9 @@ public class GeoCircle extends Circle{
                         
                         //Draw circle from last 3 points
                         Circle c1 = GeoMetry.Circle3Point(point[click], point[click-1], point[click-2]);
-                         GeoCircle circle = new GeoCircle(c1);
-                     
+                        GeoCircle circle = new GeoCircle(c1);
                         showPoint(new Point(c1.getCenterX(), c1.getCenterY()), layout, false);
+                        setCircle(circle);
                         layout.chld.getChildren().addAll(circle,circle.menu.getLabel());
 
                         //Event handler to remove it
@@ -153,6 +166,10 @@ public class GeoCircle extends Circle{
                         circle.menu.delete.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent e) {
+                                circle.ids.forEach((Integer x) -> {
+                                    ((Pane)circle.getParent()).getChildren().remove((map.get(x)).menu.getLabel());
+                                    ((Pane)circle.getParent()).getChildren().remove(map.get(x));
+                                });
                                 ((Pane)circle.getParent()).getChildren().remove(circle.menu.getLabel());
                                 ((Pane)circle.getParent()).getChildren().remove(circle);
                             }
@@ -198,6 +215,7 @@ public class GeoCircle extends Circle{
                         //Draw circle
                         double r = GeoMetry.distance(point[click], point[click-1]);
                         GeoCircle circle = new GeoCircle(point[click-1], r);
+                        setCircle(circle);
                         layout.chld.getChildren().addAll(circle,circle.menu.getLabel());
  
                         //Event handler to remove it
@@ -220,6 +238,10 @@ public class GeoCircle extends Circle{
                         circle.menu.delete.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent e) {
+                                circle.ids.forEach((Integer x) -> {
+                                    ((Pane)circle.getParent()).getChildren().remove((map.get(x)).menu.getLabel());
+                                    ((Pane)circle.getParent()).getChildren().remove(map.get(x));
+                                });
                                 ((Pane)circle.getParent()).getChildren().remove(circle.menu.getLabel());
                                 ((Pane)circle.getParent()).getChildren().remove(circle);
                             }
@@ -265,6 +287,7 @@ public class GeoCircle extends Circle{
                         showPoint(pp, layout, false);
                         double r = GeoMetry.distance(point[click], pp);
                         GeoCircle circle = new GeoCircle(pp, r);
+                        setCircle(circle);
                         layout.chld.getChildren().addAll(circle, circle.menu.getLabel());
 
                          //Event handler to remove it
@@ -287,6 +310,10 @@ public class GeoCircle extends Circle{
                         circle.menu.delete.setOnAction(new EventHandler<ActionEvent>() {
                             @Override
                             public void handle(ActionEvent e) {
+                                circle.ids.forEach((Integer x) -> {
+                                    ((Pane)circle.getParent()).getChildren().remove((map.get(x)).menu.getLabel());
+                                    ((Pane)circle.getParent()).getChildren().remove(map.get(x));
+                                });
                                 ((Pane)circle.getParent()).getChildren().remove(circle.menu.getLabel());
                                 ((Pane)circle.getParent()).getChildren().remove(circle);
                             }
@@ -358,7 +385,9 @@ public class GeoCircle extends Circle{
                     Point pp = new Point(new Double(X), new Double(Y));
                     GeoCircle circle = new GeoCircle(pp, new Double(r));
                     showPoint(pp, layout, false);
+                    setCircle(circle);
                     layout.chld.getChildren().addAll(circle, circle.menu.getLabel());
+                    
                     //Event handler to remove it
                     circle.setOnMouseClicked(new EventHandler<MouseEvent>() {
                         @Override
@@ -379,6 +408,10 @@ public class GeoCircle extends Circle{
                     circle.menu.delete.setOnAction(new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent e) {
+                            circle.ids.forEach((Integer x) -> {
+                                    ((Pane)circle.getParent()).getChildren().remove((map.get(x)).menu.getLabel());
+                                    ((Pane)circle.getParent()).getChildren().remove(map.get(x));
+                                });
                             ((Pane)circle.getParent()).getChildren().remove(circle.menu.getLabel());
                             ((Pane)circle.getParent()).getChildren().remove(circle);
                         }
