@@ -5,14 +5,16 @@
  */
 package geocal;
 
-import static javafx.print.PrintColor.COLOR;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 
 /**
@@ -22,9 +24,12 @@ import javafx.scene.transform.Scale;
 public class GeoPane extends GridPane{
     Pane chld = new Pane();
     Delta delta = new Delta();
+    
     GeoPane()
     {
         super();
+        Rotate rotate = new Rotate(180, Rotate.X_AXIS);
+        chld.getTransforms().add(rotate);
         chld.setTranslateX(this.getWidth()/2);
         chld.setTranslateY(this.getHeight()/2);
         this.getChildren().add(chld);
@@ -83,6 +88,17 @@ public class GeoPane extends GridPane{
                 }
                 
             }
+            else if(component instanceof Label)
+            {
+                
+                System.out.println("Baal-chaal");
+                ((Label)component).setLayoutX(((Label)component).getLayoutX()*factor);
+                ((Label)component).setLayoutY(((Label)component).getLayoutY()*factor);
+                
+//                component.getTransforms().add(scale);
+                
+                
+            }
         }
     }
     
@@ -98,8 +114,27 @@ public class GeoPane extends GridPane{
         if(ev.getY()-delta.y>-5000&&ev.getY()-delta.y<5000)
         chld.setTranslateY(ev.getY()-delta.y);
     }
-
+    void clear()
+    {
+        List<Node> nodesToRemove = new ArrayList<>();
+        for (Node component : chld.getChildren()) {
+            if (component instanceof Line)
+            {
+                ;
+            }
+            else
+            {
+                nodesToRemove.add(component);
+            }
+        }
+        for(Node component : nodesToRemove)
+        {
+            ((Pane)component.getParent()).getChildren().remove(component);
+        }
+    }
+    
     private void scanInputControls(Pane pane) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
+
