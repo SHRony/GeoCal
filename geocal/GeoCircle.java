@@ -114,7 +114,7 @@ public class GeoCircle extends Circle{
     public static void Draw_3_Point(GeoPane layout)
     {
 
-         temp.clear();
+
          click = 0;
 
         //selecting points
@@ -190,7 +190,6 @@ public class GeoCircle extends Circle{
      */
     public static void Draw_C_P(GeoPane layout)
     {
-        temp.clear();
         click = 0;
         
         layout.chld.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -261,7 +260,6 @@ public class GeoCircle extends Circle{
      */
     public static void Draw_E_P(GeoPane layout)
     {
-        temp.clear();
         click = 0;
         
         layout.chld.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -326,7 +324,7 @@ public class GeoCircle extends Circle{
         });
     }
 
-
+    
     /**
      * 
      * Take input: center & radius
@@ -337,8 +335,7 @@ public class GeoCircle extends Circle{
     public static void Draw_C_R(GeoPane layout){
         if(MainMenu.move)
             return ;
-        temp.clear();
-        
+
         Stage window = new Stage();
         window.setTitle("Give input");
 
@@ -386,7 +383,8 @@ public class GeoCircle extends Circle{
                 else
                 {
                     Point pp = new Point(new Double(X), new Double(Y));
-                    GeoCircle circle = new GeoCircle(pp, new Double(r));
+                    double rr=new Double(r);
+                    GeoCircle circle = new GeoCircle(pp, rr*MainMenu.factor);
                     showPoint(pp, layout, false);
                     setCircle(circle);
                     layout.chld.getChildren().addAll(circle, circle.menu.getLabel());
