@@ -88,6 +88,14 @@ public class GeoPane extends GridPane{
                 }
                 
             }
+            else if(component instanceof Triangle)
+            {
+                scale.setX(component.getScaleX() * factor);
+                scale.setY(component.getScaleY() * factor);
+                component.getTransforms().add(scale);
+                
+                
+            }
             else if(component instanceof Label)
             {
                 
@@ -137,4 +145,3 @@ public class GeoPane extends GridPane{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
-
