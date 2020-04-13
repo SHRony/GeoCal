@@ -119,6 +119,17 @@ public class MainMenu extends Application{
         line.getItems().add(line_p);
         //Polygon
         Menu poly = new Menu("Polygon");
+        MenuItem draw_triangle = new MenuItem("Triangle Draw");
+        poly.getItems().addAll(draw_triangle);
+        
+        draw_triangle.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                move=false;
+                Triangle.Draw_3_Point(layout);
+                e.consume();
+            }
+        });
 
         //Graphs
         Menu graph = new Menu("Graph");
@@ -160,19 +171,6 @@ public class MainMenu extends Application{
             Scale scale = new Scale();
             layout.getTransforms().add(scale);
         }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         //Backgrounds of all the panes
         root.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(0), Insets.EMPTY)));
