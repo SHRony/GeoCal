@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -14,7 +13,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -25,7 +23,7 @@ public class GeoCircle extends Circle{
     static final int TOTAL = 600;
     public static int click;
     public static Point point[] = new Point[TOTAL];
-    public static Map<Integer, GeoCircle> map = new HashMap();
+    public static Map<Integer, GeoCircle> CircleMap = new HashMap();
     public static List<Integer> temp = new ArrayList<Integer>();
     public List<Integer> ids = new ArrayList<Integer>();
     public static Integer id =0;
@@ -44,6 +42,7 @@ public class GeoCircle extends Circle{
         this.setCenterX(pp.getX());
         this.setCenterY(pp.getY());
         menu = new SmallMenu(pp);
+        menu.addForCircle(); //MenuItem Add
     }
     GeoCircle(Point pp, double r)
     {
@@ -60,34 +59,13 @@ public class GeoCircle extends Circle{
         GeoCircle cc = new GeoCircle(pp);
         cc.setRadius(2);
         cc.setFill(Color.BLUE);
-        map.put(id, cc);
-        temp.add(id);
-        id++;
+        CircleMap.put(id, cc);
+        temp.add(id++);
+        if(!show)   cc.menu.HideLabel();
         layout.chld.getChildren().addAll(cc, cc.menu.getLabel());
-        cc.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-            if(event.getButton()==MouseButton.SECONDARY)
-               cc.menu.list.show(cc.menu.lbl, Side.BOTTOM, 0, 0);
-            }
-        });
-        cc.menu.delete.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                ((Pane)cc.getParent()).getChildren().remove(cc.menu.getLabel());
-                ((Pane)cc.getParent()).getChildren().remove(cc);
-            }
-        });
-        cc.menu.rename.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                cc.menu.Rename();
-            }
-        });
-        if(!show)
-        {
-            cc.menu.HideLabel();
-        }
+
+        //Event handler to remove it
+        SmallMenu.menuSet(cc);
     }
 
 
@@ -103,8 +81,7 @@ public class GeoCircle extends Circle{
         geo.ids.addAll(temp);
         temp.clear();
     }
-
-
+    
     /**
      * Select 3 point for drawing circle
      * and draw circle
@@ -114,7 +91,7 @@ public class GeoCircle extends Circle{
     public static void Draw_3_Point(GeoPane layout)
     {
 
-
+        temp.clear();
          click = 0;
 
         //selecting points
@@ -147,33 +124,7 @@ public class GeoCircle extends Circle{
                         layout.chld.getChildren().addAll(circle,circle.menu.getLabel());
 
                         //Event handler to remove it
-                        circle.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                            @Override
-                            public void handle(MouseEvent event) {
-                                if(event.getButton()==MouseButton.SECONDARY)
-                                {
-                                    circle.menu.list.show(circle.menu.lbl, Side.BOTTOM, 0, 0);
-                                }
-                            }
-                        });
-                    
-                        circle.menu.rename.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent e) {
-                                circle.menu.Rename();
-                            }
-                        });
-                        circle.menu.delete.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent e) {
-                                circle.ids.forEach((Integer x) -> {
-                                    ((Pane)circle.getParent()).getChildren().remove((map.get(x)).menu.getLabel());
-                                    ((Pane)circle.getParent()).getChildren().remove(map.get(x));
-                                });
-                                ((Pane)circle.getParent()).getChildren().remove(circle.menu.getLabel());
-                                ((Pane)circle.getParent()).getChildren().remove(circle);
-                            }
-                        });
+                        SmallMenu.menuSet(circle);
                     }
 
                 }
@@ -190,6 +141,7 @@ public class GeoCircle extends Circle{
      */
     public static void Draw_C_P(GeoPane layout)
     {
+        temp.clear();
         click = 0;
         
         layout.chld.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -219,33 +171,7 @@ public class GeoCircle extends Circle{
                         layout.chld.getChildren().addAll(circle,circle.menu.getLabel());
  
                         //Event handler to remove it
-                        circle.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                            @Override
-                            public void handle(MouseEvent event) {
-                                if(event.getButton()==MouseButton.SECONDARY)
-                                {
-                                    circle.menu.list.show(circle.menu.lbl, Side.BOTTOM, 0, 0);
-                                }
-                            }
-                        });
-                    
-                        circle.menu.rename.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent e) {
-                                circle.menu.Rename();
-                            }
-                        });
-                        circle.menu.delete.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent e) {
-                                circle.ids.forEach((Integer x) -> {
-                                    ((Pane)circle.getParent()).getChildren().remove((map.get(x)).menu.getLabel());
-                                    ((Pane)circle.getParent()).getChildren().remove(map.get(x));
-                                });
-                                ((Pane)circle.getParent()).getChildren().remove(circle.menu.getLabel());
-                                ((Pane)circle.getParent()).getChildren().remove(circle);
-                            }
-                        });
+                        SmallMenu.menuSet(circle);
                     }
                 }
             }
@@ -260,6 +186,7 @@ public class GeoCircle extends Circle{
      */
     public static void Draw_E_P(GeoPane layout)
     {
+        temp.clear();
         click = 0;
         
         layout.chld.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -291,33 +218,7 @@ public class GeoCircle extends Circle{
                         layout.chld.getChildren().addAll(circle, circle.menu.getLabel());
 
                          //Event handler to remove it
-                        circle.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                            @Override
-                            public void handle(MouseEvent event) {
-                                if(event.getButton()==MouseButton.SECONDARY)
-                                {
-                                    circle.menu.list.show(circle.menu.lbl, Side.BOTTOM, 0, 0);
-                                }
-                            }
-                        });
-                    
-                        circle.menu.rename.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent e) {
-                                circle.menu.Rename();
-                            }
-                        });
-                        circle.menu.delete.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent e) {
-                                circle.ids.forEach((Integer x) -> {
-                                    ((Pane)circle.getParent()).getChildren().remove((map.get(x)).menu.getLabel());
-                                    ((Pane)circle.getParent()).getChildren().remove(map.get(x));
-                                });
-                                ((Pane)circle.getParent()).getChildren().remove(circle.menu.getLabel());
-                                ((Pane)circle.getParent()).getChildren().remove(circle);
-                            }
-                        });
+                         SmallMenu.menuSet(circle);
                     }
                 }
             }
@@ -336,6 +237,7 @@ public class GeoCircle extends Circle{
         if(MainMenu.move)
             return ;
 
+        temp.clear();
         Stage window = new Stage();
         window.setTitle("Give input");
 
@@ -382,7 +284,7 @@ public class GeoCircle extends Circle{
                 }
                 else
                 {
-                    Point pp = new Point(new Double(X), new Double(Y));
+                    Point pp = new Point((new Double(X))*MainMenu.factor, (new Double(Y))*MainMenu.factor);
                     double rr=new Double(r);
                     GeoCircle circle = new GeoCircle(pp, rr*MainMenu.factor);
                     showPoint(pp, layout, false);
@@ -390,33 +292,7 @@ public class GeoCircle extends Circle{
                     layout.chld.getChildren().addAll(circle, circle.menu.getLabel());
                     
                     //Event handler to remove it
-                    circle.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(MouseEvent event) {
-                            if(event.getButton()==MouseButton.SECONDARY)
-                            {
-                                circle.menu.list.show(circle.menu.lbl, Side.BOTTOM, 0, 0);
-                            }
-                        }
-                    });
-                    
-                    circle.menu.rename.setOnAction(new EventHandler<ActionEvent>() {
-                        @Override
-                        public void handle(ActionEvent e) {
-                            circle.menu.Rename();
-                        }
-                    });
-                    circle.menu.delete.setOnAction(new EventHandler<ActionEvent>() {
-                        @Override
-                        public void handle(ActionEvent e) {
-                            circle.ids.forEach((Integer x) -> {
-                                    ((Pane)circle.getParent()).getChildren().remove((map.get(x)).menu.getLabel());
-                                    ((Pane)circle.getParent()).getChildren().remove(map.get(x));
-                                });
-                            ((Pane)circle.getParent()).getChildren().remove(circle.menu.getLabel());
-                            ((Pane)circle.getParent()).getChildren().remove(circle);
-                        }
-                    });
+                    SmallMenu.menuSet(circle);
                     
                     window.close();
                 }
