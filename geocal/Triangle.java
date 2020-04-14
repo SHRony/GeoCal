@@ -70,25 +70,30 @@ public class Triangle extends Polygon{
        // out.addEventFilter(ContextMenuEvent.CONTEXT_MENU_REQUESTED, Event::consume);
     }
     
-    public void setIn(Point a, Point b, Point c)
+    public void setIn(Point A, Point B, Point C)
     {
+        Point a,b,c;
+        if(GeoMetry.orientation(A, B, C)==1)
+        {
+            a=A; b=B; c=C;
+        }
+        else
+        {
+            a=C; b=B; c=A;
+        }
+
         double titha1 = angle(a,b,c);
         double titha2 = angle(a,c,b);
         
-//        System.out.println("A=("+a.getX()+","+a.getY()+")");
-//        System.out.println("B=("+b.getX()+","+b.getY()+")");
-//        System.out.println("C=("+c.getX()+","+c.getY()+")");
-//        System.out.println("Titha1="+Math.toDegrees(titha1)+" , Titha2 ="+Math.toDegrees(titha2));
-        
-        Point d = GeoMetry.rotation(b, c, titha1/2.0);
-        Point e = GeoMetry.rotation(c, b, titha2/2.0);
+        Point d = GeoMetry.rotation(b, c, -titha1/2.0);
+        Point e = GeoMetry.rotation(c, b, +titha2/2.0);
         Point o = GeoMetry.solve_eqn(GeoMetry.make_eqn(b, d), GeoMetry.make_eqn(c, e));
         Equation one = GeoMetry.make_eqn(b, c);
         Point p = GeoMetry.solve_eqn(one , GeoMetry.perpendicularEqn(one, o));
-        //p.setX(p.getX()*MainMenu.factor);
-        //p.setY(p.getY()*MainMenu.factor);
+        
         this.in = new GeoCircle(o, GeoMetry.distance(o, p));
         in.setVisible(false);
+        System.out.println(in.toString());
         
     }
     
@@ -129,9 +134,9 @@ public class Triangle extends Polygon{
      */
     public double angle(Point a, Point b, Point c)
     {
-        Point AB = GeoMetry.sub(b, a);
+        Point BA = GeoMetry.sub(a, b);
         Point BC = GeoMetry.sub(c, b);
-        double thita = Math.acos(GeoMetry.dot(AB, BC)/((GeoMetry.val(AB))*(GeoMetry.val(BC))));
+        double thita = Math.acos(GeoMetry.dot(BA, BC)/((GeoMetry.val(BA))*(GeoMetry.val(BC))));
         return thita;
     }
     
