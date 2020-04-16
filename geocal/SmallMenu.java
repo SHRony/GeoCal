@@ -5,6 +5,8 @@
  */
 package geocal;
 import static geocal.GeoCircle.CircleMap;
+import static geocal.GeoPoly.PolyMap;
+import static geocal.GeoRect.RectMap;
 import static geocal.Triangle.TriangleMap;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -20,6 +22,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
@@ -32,10 +35,10 @@ public class SmallMenu {
     private static int cnt=1;
     private static char ch ='A';
     private String name;
-    Label lbl = new Label();
+    public Label lbl = new Label();
     
     final public ContextMenu list;
-    public MenuItem delete, rename, inward, circled;
+    public MenuItem delete, rename, inward, circled, editHeight, editWidth;
 
     public SmallMenu()
     {
@@ -117,6 +120,20 @@ public class SmallMenu {
         inward = new MenuItem("Inward of Triangle");
         this.list.getItems().addAll(circled,inward);
         this.HideLabel();
+    }
+    //Menu Item adding for Rectangle
+    public void addForRectangle()
+    {
+        this.HideLabel();
+        editHeight = new MenuItem("Edit Height");
+        editWidth = new MenuItem("Edit Width");
+        this.list.getItems().addAll(editHeight, editWidth);
+    }
+    //Menu Item adding for PlyGon
+    public void addForPolygon()
+    {
+        this.HideLabel();
+        
     }
     
     /**
@@ -222,6 +239,82 @@ public class SmallMenu {
             }
         });
     }
+    
+    /**
+     * Menu setting for Rectangle 
+     * @param rect
+     */
+    public static void menuSet(GeoRect rect)
+    {
+        //Menu showing
+        rect.poly.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getButton()==MouseButton.SECONDARY)
+                {
+                    rect.menu.list.show(rect.menu.lbl, Side.BOTTOM, 0, 0);
+                }
+            }
+        });
+        //Action setup            
+        rect.menu.delete.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                rect.ids.forEach((Integer x) -> {
+                    ((Pane)rect.poly.getParent()).getChildren().remove((RectMap.get(x)).menu.getLabel());
+                    ((Pane)rect.poly.getParent()).getChildren().remove(RectMap.get(x));
+                });
+                ((Pane)rect.poly.getParent()).getChildren().remove(rect.menu.getLabel());
+                ((Pane)rect.poly.getParent()).getChildren().remove(rect.poly);
+            }
+        });
+        rect.menu.editHeight.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                GeoRect.EditHeight(rect);
+            }
+        });
+        rect.menu.editWidth.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                GeoRect.EditWidth(rect);
+            }
+        });
+    }
+    
+    /**
+     * Menu setting for PolyGon
+     * @param p 
+     */
+    public static void menuSet(GeoPoly p)
+    {
+        //Menu showing
+        p.poly.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getButton()==MouseButton.SECONDARY)
+                {
+                    p.menu.list.show(p.menu.lbl, Side.BOTTOM, 0, 0);
+                }
+            }
+        });
+        //Action setup            
+        p.menu.delete.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                p.ids.forEach((Integer x) -> {
+                    ((Pane)p.poly.getParent()).getChildren().remove((PolyMap.get(x)).menu.getLabel());
+                    ((Pane)p.poly.getParent()).getChildren().remove(PolyMap.get(x));
+                });
+                //((Pane)p.poly.getParent()).getChildren().remove(p.menu.getLabel());
+                ((Pane)p.poly.getParent()).getChildren().remove(p.poly);
+                p.points.clear();
+                p.ids.clear();
+                p.poly=new Polygon();
+            }
+        });
+    }
+    
     
     /**
      * Rename Label
