@@ -96,6 +96,14 @@ public class GeoPane extends GridPane{
                 
                 
             }
+            else if(component instanceof Polygon)
+            {
+                scale.setX(component.getScaleX() * factor);
+                scale.setY(component.getScaleY() * factor);
+                component.getTransforms().add(scale);
+                
+                
+            }
             else if(component instanceof Label)
             {
                 
@@ -128,7 +136,8 @@ public class GeoPane extends GridPane{
         for (Node component : chld.getChildren()) {
             if (component instanceof Line)
             {
-                ;
+                if(((Line) component).getFill()==Color.TRANSPARENT)
+                    nodesToRemove.add(component);
             }
             else
             {
