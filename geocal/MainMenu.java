@@ -120,7 +120,11 @@ public class MainMenu extends Application{
         //Polygon
         Menu poly = new Menu("Polygon");
         MenuItem draw_triangle = new MenuItem("Triangle Draw");
-        poly.getItems().addAll(draw_triangle);
+        MenuItem draw_rectangle = new MenuItem("Rectangle Draw");
+        MenuItem draw_polygon = new MenuItem("Rigid Polygon");
+        MenuItem regular_polygon = new MenuItem("Regular Polygon");
+        MenuItem draw_convex = new MenuItem("Convex Hull");
+        poly.getItems().addAll(draw_triangle, draw_rectangle, draw_polygon, regular_polygon, draw_convex);
         
         draw_triangle.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -130,9 +134,143 @@ public class MainMenu extends Application{
                 e.consume();
             }
         });
+        draw_rectangle.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                move=false;
+                GeoRect.Draw_Rect(layout);
+                e.consume();
+            }
+        });
+        draw_polygon.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                move=false;
+                GeoPoly.DrawPoly(layout);
+                
+            }
+        });
+        regular_polygon.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                move=false;
+                GeoPoly.RegularPolygon(layout);
+                
+            }
+        });
+        draw_convex.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                move=false;
+                System.out.println("Pending...");
+                e.consume();
+            }
+        });
 
         //Graphs
         Menu graph = new Menu("Graph");
+        MenuItem main = new MenuItem("Give me your Function");
+        MenuItem sin = new MenuItem("SinX");
+        MenuItem cos = new MenuItem("CosX");
+        MenuItem tan = new MenuItem("TanX");
+        MenuItem cot = new MenuItem("CotX");
+        MenuItem sec = new MenuItem("SecX");
+        MenuItem cosec = new MenuItem("CoecX");
+        MenuItem log2 = new MenuItem("Log2(X)");
+        MenuItem log10 = new MenuItem("Log10(X)");
+        MenuItem ln = new MenuItem("Ln(X)");
+        MenuItem square = new MenuItem("X^2");
+        MenuItem cubic = new MenuItem("X^3");
+        MenuItem sqrt = new MenuItem("Sqrt(X)");
+        MenuItem abs = new MenuItem("Abs(X)");
+        MenuItem exp = new MenuItem("Exp(X)");
+        graph.getItems().addAll(main, sin, cos, tan, cot, sec, cosec, square, cubic,sqrt, log2, log10, ln, abs, exp);
+        
+        sin.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Graph.Sin(layout);
+            }
+        });
+        cos.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Graph.Cos(layout);
+            }
+        });
+        tan.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Graph.Tan(layout);
+            }
+        });
+        cot.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Graph.Cot(layout);
+            }
+        });
+        sec.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Graph.Sec(layout);
+            }
+        });
+        cosec.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Graph.Cosec(layout);
+            }
+        });
+        square.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Graph.Square(layout);
+            }
+        });
+        sqrt.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Graph.Sqrt(layout);
+            }
+        });
+        cubic.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Graph.Cubic(layout);
+            }
+        });
+        log2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Graph.Log2(layout);
+            }
+        });
+        log10.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Graph.Log10(layout);
+            }
+        });
+        ln.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Graph.Ln(layout);
+            }
+        });
+        abs.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Graph.Abs(layout);
+            }
+        });
+        exp.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Graph.Ex(layout);
+            }
+        });
+        
         //Drag Graph Paper
         Menu mv = new Menu("Move");
         MenuItem Move_graph = new MenuItem("Move Graph");
