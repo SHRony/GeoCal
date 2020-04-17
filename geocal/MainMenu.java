@@ -115,8 +115,40 @@ public class MainMenu extends Application{
 
         //Line menu
         Menu line = new Menu("Line");
-        MenuItem line_p = new MenuItem();
-        line.getItems().add(line_p);
+        MenuItem line_p = new MenuItem("Draw Line");
+        MenuItem line_e = new MenuItem("Draw Line From Equation");
+        MenuItem seg_p = new MenuItem("Draw Segment");
+        line.getItems().addAll(line_p,line_e,seg_p);
+        line_p.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+                move=false;
+                event.consume();
+                GeoLine.draw(layout.chld);
+            }
+            
+        });
+        
+        line_e.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+                move=false;
+                event.consume();
+                GeoLine.DrawFromEquation(layout.chld);
+            }
+            
+        });
+        
+        seg_p.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+                move=false;
+                event.consume();
+                GeoSegment.draw(layout.chld);
+            }
+            
+        });
+        
         //Polygon
         Menu poly = new Menu("Polygon");
         MenuItem draw_triangle = new MenuItem("Triangle Draw");
@@ -125,7 +157,6 @@ public class MainMenu extends Application{
         MenuItem regular_polygon = new MenuItem("Regular Polygon");
         MenuItem draw_convex = new MenuItem("Convex Hull");
         poly.getItems().addAll(draw_triangle, draw_rectangle, draw_polygon, regular_polygon, draw_convex);
-        
         draw_triangle.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -147,7 +178,7 @@ public class MainMenu extends Application{
             public void handle(ActionEvent e) {
                 move=false;
                 GeoPoly.DrawPoly(layout);
-                
+
             }
         });
         regular_polygon.setOnAction(new EventHandler<ActionEvent>() {
@@ -155,7 +186,7 @@ public class MainMenu extends Application{
             public void handle(ActionEvent e) {
                 move=false;
                 GeoPoly.RegularPolygon(layout);
-                
+
             }
         });
         draw_convex.setOnAction(new EventHandler<ActionEvent>() {
@@ -166,7 +197,6 @@ public class MainMenu extends Application{
                 e.consume();
             }
         });
-
         //Graphs
         Menu graph = new Menu("Graph");
         MenuItem main = new MenuItem("Give me your Function");
@@ -185,7 +215,7 @@ public class MainMenu extends Application{
         MenuItem abs = new MenuItem("Abs(X)");
         MenuItem exp = new MenuItem("Exp(X)");
         graph.getItems().addAll(main, sin, cos, tan, cot, sec, cosec, square, cubic,sqrt, log2, log10, ln, abs, exp);
-        
+
         sin.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -270,7 +300,6 @@ public class MainMenu extends Application{
                 Graph.Ex(layout);
             }
         });
-        
         //Drag Graph Paper
         Menu mv = new Menu("Move");
         MenuItem Move_graph = new MenuItem("Move Graph");
@@ -351,7 +380,6 @@ public class MainMenu extends Application{
                 scale.setPivotY(event.getY());
                 scale.setX(layout.getScaleX() * zoomFactor);
                 scale.setY(layout.getScaleY() * zoomFactor);
-                System.out.println(scale.getX());
                 layout.getTransforms().add(scale);
                 event.consume();
             }
@@ -389,7 +417,8 @@ public class MainMenu extends Application{
        
         layout.chld.setTranslateX(scene.getWidth()/2);
         layout.chld.setTranslateY(scene.getHeight()/2);
-        ps.setTitle("My GeoCalulator");
+        GeoLine temp = new GeoLine(1,-1,15);
+        temp.calibrate();
         ps.show();
 
     }
