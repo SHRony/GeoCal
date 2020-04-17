@@ -5,9 +5,10 @@
  */
 package geocal;
 import static geocal.GeoCircle.CircleMap;
+import static geocal.Triangle.TriangleMap;
 import static geocal.GeoPoly.PolyMap;
 import static geocal.GeoRect.RectMap;
-import static geocal.Triangle.TriangleMap;
+import javafx.scene.shape.Polygon;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Side;
@@ -22,7 +23,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
@@ -38,8 +38,8 @@ public class SmallMenu {
     public Label lbl = new Label();
     
     final public ContextMenu list;
-    public MenuItem delete, rename, inward, circled, editHeight, editWidth;
-
+    public MenuItem delete, rename, inward, circled,perp,editHeight,editWidth,showhull,hidehull;
+    
     public SmallMenu()
     {
         name=String.valueOf(ch).concat(String.valueOf(cnt));
@@ -121,8 +121,7 @@ public class SmallMenu {
         this.list.getItems().addAll(circled,inward);
         this.HideLabel();
     }
-    //Menu Item adding for Rectangle
-    public void addForRectangle()
+        public void addForRectangle()
     {
         this.HideLabel();
         editHeight = new MenuItem("Edit Height");
@@ -133,8 +132,17 @@ public class SmallMenu {
     public void addForPolygon()
     {
         this.HideLabel();
-        
+        showhull=new MenuItem("Show Convex Hull");
+        hidehull=new MenuItem("Hide Convex Hull");
+        this.list.getItems().addAll(showhull,hidehull);
+
     }
+    public void addForLine()
+    {
+        perp=new MenuItem("Perpendicular Line through Selected Point");
+        this.list.getItems().add(perp);
+    }
+    
     
     /**
      * Menu setting for GeoCircle
@@ -239,8 +247,7 @@ public class SmallMenu {
             }
         });
     }
-    
-    /**
+     /**
      * Menu setting for Rectangle 
      * @param rect
      */
@@ -281,7 +288,7 @@ public class SmallMenu {
             }
         });
     }
-    
+
     /**
      * Menu setting for PolyGon
      * @param p 
@@ -298,10 +305,47 @@ public class SmallMenu {
                 }
             }
         });
-        //Action setup            
+        p.hull.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getButton()==MouseButton.SECONDARY)
+                {
+                    p.menu.list.show(p.menu.lbl, Side.BOTTOM, 0, 0);
+                }
+            }
+        });
+        //Action setup    
+        
+        //Sow Convex hull
+        
+        p.menu.showhull.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                p.showHull(((Pane)p.poly.getParent()));
+                p.hull.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    if(event.getButton()==MouseButton.SECONDARY)
+                    {
+                        p.menu.list.show(p.menu.lbl, Side.BOTTOM, 0, 0);
+                    }
+                }
+            });
+            }
+        });
+        //Hide Convex Hull
+        p.menu.hidehull.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                p.hideHull(((Pane)p.poly.getParent()));
+                
+            }
+        });
+        //Delete it
         p.menu.delete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
+                p.hideHull(((Pane)p.poly.getParent()));
                 p.ids.forEach((Integer x) -> {
                     ((Pane)p.poly.getParent()).getChildren().remove((PolyMap.get(x)).menu.getLabel());
                     ((Pane)p.poly.getParent()).getChildren().remove(PolyMap.get(x));
@@ -314,7 +358,39 @@ public class SmallMenu {
             }
         });
     }
-    
+    //Menu setting for Line
+    static public void menuSet(GeoLine l)
+    {
+        //show menu
+        
+        l.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getButton()==MouseButton.SECONDARY)
+                {   
+//                    System.out.println("Baal "+event.getX());
+//                    l.menu.lbl.setLayoutY(event.getY());
+//                    l.menu.lbl.setLayoutX(event.getX());
+                    l.menu.list.show(l.menu.lbl, Side.BOTTOM, 0, 0);
+                }
+            }
+        });
+        l.menu.delete.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent e) {
+                l.remove();
+            }
+        });
+        l.menu.perp.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+             public void handle(ActionEvent e) {
+                MainMenu.move=false;
+                e.consume();
+                GeoLine.drawPerp((Pane) l.getParent(),l);
+            }
+        });
+        
+    }
     
     /**
      * Rename Label
