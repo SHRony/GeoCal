@@ -5,7 +5,6 @@
  */
 package geocal;
 
-import static geocal.GeoRect.RectMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +47,10 @@ public class GeoPoly {
     private static Stage window = new Stage();
     private static Label txt = new Label();
     SmallMenu menu;
+    private int vertices;
+    private double length;
+    private GeoPane layout;
+    
     GeoPoly()
     {
         poly = new Polygon();
@@ -95,6 +98,31 @@ public class GeoPoly {
         return GeoMetry.mid(a ,b);
     }
     
+    public int getVertices() {
+        return vertices;
+    }
+
+    public void setVertices(int vertices) {
+        this.vertices = vertices;
+    }
+
+    public double getLength() {
+        return length;
+    }
+
+    public void setLength(double length) {
+        this.length = length;
+    }
+    
+    public GeoPane getLayout() {
+        return layout;
+    }
+    
+    public void setLayout(GeoPane layout) {
+        this.layout = layout;
+    }
+    
+    
      static {
         for(int i=0; i<TOTAL; i++)
         {
@@ -119,6 +147,22 @@ public class GeoPoly {
         //Event handler to remove it
         SmallMenu.menuSet(cc);
     } 
+    
+    public static void Delete(GeoPoly p, Boolean all)
+    {
+        //p.hideHull(((Pane)p.poly.getParent()));
+        p.hideHull(p.layout.chld);
+        p.ids.forEach((Integer x) -> {
+            ((Pane)p.poly.getParent()).getChildren().remove((PolyMap.get(x)).menu.getLabel());
+            ((Pane)p.poly.getParent()).getChildren().remove(PolyMap.get(x));
+        });
+                
+        if(all) ((Pane)p.poly.getParent()).getChildren().remove(p.menu.getLabel());
+        ((Pane)p.poly.getParent()).getChildren().remove(p.poly);
+        p.points.clear();
+        p.ids.clear();
+        p.vec.clear();
+    }
     
     public static void DrawPoly(GeoPane layout)
     {
@@ -160,6 +204,9 @@ public class GeoPoly {
                     temp.clear();
                     pp = p.center();
                     p.menu.set(pp.getX(), pp.getY());
+                    p.menu.editLength.setDisable(true);
+                    p.menu.editVertices.setDisable(true);
+                    p.setLayout(layout);
 
                 }
             }
@@ -199,8 +246,15 @@ public class GeoPoly {
                         input="";
                         
                         GeoPoly p = new GeoPoly();
+                        p.menu.showhull.setDisable(true);
+                        p.menu.hidehull.setDisable(true);
                         p.points.addAll(point[click-1].getX(), point[click-1].getY(), point[click].getX(), point[click].getY());
                         Point a = point[click-1], b = point[click];
+                        p.setVertices(n);
+                        //p.setLength(GeoMetry.distance(a, b)/MainMenu.factor);
+                        p.setLength(GeoMetry.distance(a, b));
+                        p.setLayout(layout);
+                        System.out.println("Saved: "+p.getVertices()+","+p.getLength());
                         
                         double angle = (n-2)*Math.PI/n; //external angle
                         
@@ -228,6 +282,108 @@ public class GeoPoly {
         });
     }
     
+    /**
+     * Take new length of Regular Polygon
+     * @param p
+     */
+    public static void EditLength(GeoPoly p)
+    {
+        temp.clear();
+        txt.setText("Enter New Length of side of regular polygon");
+        window.showAndWait();
+        double h = (new Double(input))*MainMenu.factor;
+        input="";
+        System.out.println("Old Length: "+p.getLength()+", new set "+h);
+        System.out.println("Vertices "+p.getVertices());
+        GeoPane layout = p.getLayout();
+        p.setLength(h);
+        
+        //1st point unchanged
+        Point a = new Point(p.points.get(0), p.points.get(1));
+        showPoint(a, layout);
+        
+        //old 2nd point
+        Point b = new Point(p.points.get(2), p.points.get(3));
+        
+        //new 2nd
+        b = GeoMetry.ab_to_d(a, b, h);
+        showPoint(b, layout);
+        
+        // remove old points
+        Delete(p, true);
+        p.points.clear();
+        
+        p.points.addAll(a.getX(), a.getY(), b.getX(), b.getY());
+        
+        int n = p.getVertices();
+        double angle = (n-2)*Math.PI/n; //external angle
+                        
+        //draw n-2 points
+        for(int i=2; i<n; i++)
+        {
+            a = GeoMetry.rotation(b, a, -1.0*angle);
+            p.points.addAll(a.getX(), a.getY());
+            showPoint(a, p.getLayout());
+                            
+            //swap
+            Point tt = b;
+            b = a;
+            a = tt;
+        }
+        setCircle(p);
+        a = p.center();
+        p.menu.set(a.getX(), a.getY());
+        layout.chld.getChildren().addAll(p.poly, p.menu.getLabel());
+    }
+    
+    /**
+     * Take new no of Vertices of Regular Polygon
+     * @param p
+     */
+    public static void EditVertices(GeoPoly p)
+    {
+        temp.clear();
+        txt.setText("Enter New no of Vertices of regular polygon");
+        window.showAndWait();
+        //double h = (new Double(input))*MainMenu.factor;
+        int n = new Integer(input);
+        System.out.println("Old Vertices: "+p.getVertices()+", new set "+n);
+        System.out.println("Length: "+p.getLength());
+        p.setVertices(n);
+        GeoPane layout = p.getLayout();
+        
+        //1st, 2nd point unchanged
+        Point a = new Point(p.points.get(0), p.points.get(1));
+        showPoint(a, layout);
+        Point b = new Point(p.points.get(2), p.points.get(3));
+        showPoint(b, layout);
+        
+        // remove old points
+        Delete(p, true);
+        p.points.clear();
+        
+        p.points.addAll(a.getX(), a.getY(), b.getX(), b.getY());
+        
+        double h = p.getLength();
+        double angle = (n-2)*Math.PI/n; //external angle
+                        
+        //draw n-2 points
+        for(int i=2; i<n; i++)
+        {
+            a = GeoMetry.rotation(b, a, -1.0*angle);
+            p.points.addAll(a.getX(), a.getY());
+            showPoint(a, p.getLayout());
+                            
+            //swap
+            Point tt = b;
+            b = a;
+            a = tt;
+        }
+        setCircle(p);
+        a = p.center();
+        p.menu.set(a.getX(), a.getY());
+        layout.chld.getChildren().addAll(p.poly, p.menu.getLabel());
+    }
 
     static void Take_Input()
     {
