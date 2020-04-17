@@ -21,9 +21,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -46,6 +43,7 @@ public class GeoRect{
     private static Stage window = new Stage();
     private static Label txt = new Label();
     SmallMenu menu;
+    private GeoPane layout;
     
     GeoRect(Point a, Point b, Point c , Point d)
     {
@@ -64,6 +62,14 @@ public class GeoRect{
         p[1]=b;
         p[2]=c;
         p[3]=d;
+    }
+
+    public GeoPane getLayout() {
+        return layout;
+    }
+
+    public void setLayout(GeoPane layout) {
+        this.layout = layout;
     }
 
     public void setPoint(int i, Point pp)
@@ -109,6 +115,16 @@ public class GeoRect{
         Take_Height();
     }
     
+    public static void Delete(GeoRect rect)
+    {
+        rect.ids.forEach((Integer x) -> {
+                    ((Pane)rect.poly.getParent()).getChildren().remove((RectMap.get(x)).menu.getLabel());
+                    ((Pane)rect.poly.getParent()).getChildren().remove(RectMap.get(x));
+            });
+            ((Pane)rect.poly.getParent()).getChildren().remove(rect.menu.getLabel());
+            ((Pane)rect.poly.getParent()).getChildren().remove(rect.poly);
+    }
+    
     public static void Draw_Rect(GeoPane layout)
     {
         temp.clear();
@@ -144,16 +160,17 @@ public class GeoRect{
                         //find 4th point
                         Point d = GeoMetry.ab_to_d(point[click-1], point[click], h);
                         d = GeoMetry.rotation(point[click-1], d, Math.PI/2.0);
-                        //showPoint(d, layout);
+                        showPoint(d, layout);
                         
                         //find 3rd point
                         Point c = GeoMetry.ab_to_d(point[click], point[click-1], h);
                         c = GeoMetry.rotation(point[click], c, -Math.PI/2.0);
-                        //showPoint(c, layout);
+                        showPoint(c, layout);
                         
                         //Draw Rectangle
                         GeoRect rect = new GeoRect(point[click-1], point[click], c, d);
                         setCircle(rect);
+                        rect.setLayout(layout);
                         layout.chld.getChildren().addAll(rect.poly, rect.menu.getLabel());
 
                         //Event handler to remove it
@@ -172,25 +189,33 @@ public class GeoRect{
     
     public static void EditHeight(GeoRect rect)
     {
+        temp.clear();
         txt.setText("Enter New Height of Rectangle");
         window.showAndWait();
         double h = (new Double(input))*MainMenu.factor;
         input="";
         
+        GeoPane layout = rect.getLayout();
+        Delete(rect);
+        
         //1st,2nd point unchanged
         Point a = rect.getPoint(0);
         Point b = rect.getPoint(1);
+        showPoint(a, layout);
+        showPoint(b, layout);
+        
+        //find 3rd point
+        Point c = GeoMetry.ab_to_d(b, a, h);
+        c = GeoMetry.rotation(b, c, -Math.PI/2.0);
+        rect.setPoint(2, c);
+        showPoint(c, layout);
         
         //find 4th point
         Point d = GeoMetry.ab_to_d(a, b, h);
         d = GeoMetry.rotation(a, d, Math.PI/2.0);
         rect.setPoint(3, d);
+        showPoint(d, layout);
                         
-        //find 3rd point
-        Point c = GeoMetry.ab_to_d(b, a, h);
-        c = GeoMetry.rotation(b, c, -Math.PI/2.0);
-        rect.setPoint(2, c);
-        
         List<Double> newPoints = new ArrayList<>();
         for (int i = 0; i < 4; i++)
         {
@@ -199,6 +224,8 @@ public class GeoRect{
         }
         rect.poly.getPoints().clear();
         rect.poly.getPoints().addAll(newPoints);
+        setCircle(rect);
+        layout.chld.getChildren().addAll(rect.poly, rect.menu.getLabel());
 
     }
     
@@ -210,6 +237,7 @@ public class GeoRect{
     
     public static void EditWidth(GeoRect rect)
     {
+        temp.clear();
         txt.setText("Enter New Width of Rectangle");
         window.showAndWait();
         double h = (new Double(input))*MainMenu.factor;
@@ -229,6 +257,12 @@ public class GeoRect{
         c = GeoMetry.rotation(d, c, Math.PI/2.0);
         rect.setPoint(2, c);
         
+        Delete(rect);
+        showPoint(a, rect.layout);
+        showPoint(b, rect.layout);
+        showPoint(c, rect.layout);
+        showPoint(d, rect.layout);
+        
         List<Double> newPoints = new ArrayList<>();
         for (int i = 0; i < 4; i++)
         {
@@ -239,6 +273,8 @@ public class GeoRect{
 
         rect.poly.getPoints().clear();
         rect.poly.getPoints().addAll(newPoints);
+        setCircle(rect);
+        rect.layout.chld.getChildren().addAll(rect.poly, rect.menu.getLabel());
 
     }
     
