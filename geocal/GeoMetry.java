@@ -1,4 +1,3 @@
-
 package geocal;
 
 import javafx.scene.shape.Circle;
@@ -36,6 +35,11 @@ class Point {
     public void setY(double y) {
         this.y = y;
     }
+    public Point perp()
+    {
+        return new Point(-y,x);
+    }
+    
 }
 
 /**
@@ -203,7 +207,7 @@ public class GeoMetry {
      * @param a 2nd vector
      * @return resultant vector of 2nd vector subtract from 1st vector 
      */
-    static Point sub(Point b, Point a)
+        static Point sub(Point b, Point a)
     {
         return new Point(b.getX()-a.getX(),b.getY()-a.getY());
     }
@@ -217,6 +221,7 @@ public class GeoMetry {
      */
     static Point add(Point a, Point b)
     {
+        
         return new Point(a.getX()+b.getX(),a.getY()+b.getY());
     }
 
@@ -238,7 +243,9 @@ public class GeoMetry {
      */
     static Point mul(Point a, double d)
     {
-        return new Point(a.getX()*d,a.getY()*d);
+        a.setX(a.getX()*d);
+        a.setY(a.getY()*d);
+        return a;
     }
     
     /**
@@ -250,12 +257,11 @@ public class GeoMetry {
      */
     static Point ab_to_d(Point a, Point b, double d)
     {
-        Point ans= new Point();
-        ans = sub(b,a);
-        d=d/val(ans);
-        ans=mul(ans,d);
-        ans=add(a,ans);
-        return ans;
+        b=sub(b,a);
+        d=d/val(b);
+        b=mul(b,d);
+        b=add(a,b);
+        return b;
     }
     
     /**
@@ -416,7 +422,8 @@ public class GeoMetry {
     static Equation parallelEqn(Equation I, Point a)
     {
         double x = I.getA()*a.getX() + I.getB()*a.getY();
-        return new Equation(I.getA(), I.getB(), x);
+        I.setC(x);
+        return I;
     }
     
     /**
