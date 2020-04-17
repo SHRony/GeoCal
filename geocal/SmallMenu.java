@@ -6,9 +6,6 @@
 package geocal;
 import static geocal.GeoCircle.CircleMap;
 import static geocal.Triangle.TriangleMap;
-import static geocal.GeoPoly.PolyMap;
-import static geocal.GeoRect.RectMap;
-import javafx.scene.shape.Polygon;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Side;
@@ -38,7 +35,7 @@ public class SmallMenu {
     public Label lbl = new Label();
     
     final public ContextMenu list;
-    public MenuItem delete, rename, inward, circled,perp,editHeight,editWidth,showhull,hidehull;
+    public MenuItem delete, rename, inward, circled,perp,editHeight,editWidth,showhull,hidehull, editLength, editVertices;
     
     public SmallMenu()
     {
@@ -134,9 +131,13 @@ public class SmallMenu {
         this.HideLabel();
         showhull=new MenuItem("Show Convex Hull");
         hidehull=new MenuItem("Hide Convex Hull");
-        this.list.getItems().addAll(showhull,hidehull);
+        editLength = new MenuItem("Edit Length of Side");
+        editVertices = new MenuItem("Edit no of Vertices");
+        this.list.getItems().addAll(showhull,hidehull,editLength, editVertices);
 
     }
+    
+    //Menu Item adding for Line
     public void addForLine()
     {
         perp=new MenuItem("Perpendicular Line through Selected Point");
@@ -267,12 +268,7 @@ public class SmallMenu {
         rect.menu.delete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                rect.ids.forEach((Integer x) -> {
-                    ((Pane)rect.poly.getParent()).getChildren().remove((RectMap.get(x)).menu.getLabel());
-                    ((Pane)rect.poly.getParent()).getChildren().remove(RectMap.get(x));
-                });
-                ((Pane)rect.poly.getParent()).getChildren().remove(rect.menu.getLabel());
-                ((Pane)rect.poly.getParent()).getChildren().remove(rect.poly);
+                   GeoRect.Delete(rect);
             }
         });
         rect.menu.editHeight.setOnAction(new EventHandler<ActionEvent>() {
@@ -345,19 +341,25 @@ public class SmallMenu {
         p.menu.delete.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                p.hideHull(((Pane)p.poly.getParent()));
-                p.ids.forEach((Integer x) -> {
-                    ((Pane)p.poly.getParent()).getChildren().remove((PolyMap.get(x)).menu.getLabel());
-                    ((Pane)p.poly.getParent()).getChildren().remove(PolyMap.get(x));
-                });
-                //((Pane)p.poly.getParent()).getChildren().remove(p.menu.getLabel());
-                ((Pane)p.poly.getParent()).getChildren().remove(p.poly);
-                p.points.clear();
-                p.ids.clear();
-                p.poly=new Polygon();
+                GeoPoly.Delete(p, false);
+            }
+        });
+        //Edit Length of Regular Polygon
+        p.menu.editLength.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                 GeoPoly.EditLength(p);
+            }
+        });
+        //Edit No of Vertices of regular Polygon
+        p.menu.editVertices.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                 GeoPoly.EditVertices(p);
             }
         });
     }
+    
     //Menu setting for Line
     static public void menuSet(GeoLine l)
     {
@@ -368,7 +370,6 @@ public class SmallMenu {
             public void handle(MouseEvent event) {
                 if(event.getButton()==MouseButton.SECONDARY)
                 {   
-//                    System.out.println("Baal "+event.getX());
 //                    l.menu.lbl.setLayoutY(event.getY());
 //                    l.menu.lbl.setLayoutX(event.getX());
                     l.menu.list.show(l.menu.lbl, Side.BOTTOM, 0, 0);
