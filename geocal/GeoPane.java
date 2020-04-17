@@ -71,6 +71,7 @@ public class GeoPane extends GridPane{
         for (Node component : chld.getChildren()) {
             if (component instanceof Line)
             {
+                
                 if(component instanceof GeoLine)
                 {
                     if(component instanceof GeoSegment)
@@ -84,6 +85,7 @@ public class GeoPane extends GridPane{
                     ((GeoLine)component).calibrate();
                 }
             }
+            
             else if(component instanceof Circle)
             {
                 scale.setX(component.getScaleX() * factor);
@@ -106,6 +108,14 @@ public class GeoPane extends GridPane{
                 component.getTransforms().add(scale);
                 
                 
+            }
+            else if(component instanceof Polygon)
+            {
+                scale.setX(component.getScaleX() * factor);
+                scale.setY(component.getScaleY() * factor);
+                component.getTransforms().add(scale);
+
+
             }
             else if(component instanceof Label)
             {
@@ -138,7 +148,8 @@ public class GeoPane extends GridPane{
         for (Node component : chld.getChildren()) {
             if (component instanceof Line&&!(component instanceof GeoLine))
             {
-                ;
+                 if(((Line) component).getFill()==Color.TRANSPARENT)
+                    nodesToRemove.add(component);
             }
             else
             {
