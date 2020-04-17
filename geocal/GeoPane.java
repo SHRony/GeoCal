@@ -71,7 +71,18 @@ public class GeoPane extends GridPane{
         for (Node component : chld.getChildren()) {
             if (component instanceof Line)
             {
-                ;
+                if(component instanceof GeoLine)
+                {
+                    if(component instanceof GeoSegment)
+                    {
+                        ((GeoSegment)component).setStartX(((GeoLine)component).getStartX()*factor);
+                        ((GeoSegment)component).setStartY(((GeoLine)component).getStartY()*factor);
+                        ((GeoSegment)component).setEndY(((GeoLine)component).getEndY()*factor);
+                        ((GeoSegment)component).setEndX(((GeoLine)component).getEndX()*factor);
+                    }
+                    ((GeoLine)component).c*=factor;
+                    ((GeoLine)component).calibrate();
+                }
             }
             else if(component instanceof Circle)
             {
@@ -96,18 +107,9 @@ public class GeoPane extends GridPane{
                 
                 
             }
-            else if(component instanceof Polygon)
-            {
-                scale.setX(component.getScaleX() * factor);
-                scale.setY(component.getScaleY() * factor);
-                component.getTransforms().add(scale);
-                
-                
-            }
             else if(component instanceof Label)
             {
                 
-                System.out.println("Baal-chaal");
                 ((Label)component).setLayoutX(((Label)component).getLayoutX()*factor);
                 ((Label)component).setLayoutY(((Label)component).getLayoutY()*factor);
                 
@@ -134,10 +136,9 @@ public class GeoPane extends GridPane{
     {
         List<Node> nodesToRemove = new ArrayList<>();
         for (Node component : chld.getChildren()) {
-            if (component instanceof Line)
+            if (component instanceof Line&&!(component instanceof GeoLine))
             {
-                if(((Line) component).getFill()==Color.TRANSPARENT)
-                    nodesToRemove.add(component);
+                ;
             }
             else
             {
