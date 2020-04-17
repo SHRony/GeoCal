@@ -1,6 +1,9 @@
 package geocal;
 
+import java.util.Vector;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
 
 /**
  * Implementation of 2D point 
@@ -466,7 +469,67 @@ public class GeoMetry {
         c.setRadius(GeoMetry.distance(p, A));
         return c;
     }
-    
+    public static Polygon ConvexHull(Vector<Point> v)
+    {
+        Polygon q=new Polygon();
+        if(v.isEmpty())
+            return q;
+        Point pivot=v.get(0);
+        Vector<Point> ans=new Vector<Point>();
+        int idx=0;
+        System.out.println("initial array");
+        for(int i=0;i<v.size();i++)
+        {
+            System.out.println(v.get(i).getX()+" "+v.get(i).getY());
+            if(v.get(i).getY()<pivot.getY())
+            {
+                pivot=v.get(i);
+                idx=i;
+            }
+        }
+        v.set(idx, v.get(0));
+        v.set(0, pivot);
+        for(int i=1;i<v.size();i++)
+        {
+            for(int j=1;j+1<v.size();j++)
+            {
+                Point x=sub(v.get(j),pivot);
+                Point y=sub(v.get(j+1),pivot);
+                double ret=cross(x,y);
+                if(ret<0)
+                {
+                    x=v.get(j);
+                    v.set(j, v.get(j+1));
+                    v.set(j+1, x);
+                }
+            }   
+        }
+        System.out.println("baal"+v.get(0).getX()+" "+v.get(0).getY());
+        for(int i=0;i<v.size();i++)
+        {
+            System.out.println(v.get(i).getX()+" "+v.get(i).getY());
+            while(ans.size()>1&&cross(sub(ans.get(ans.size()-1),ans.get(ans.size()-2)),sub(v.get(i),ans.get(ans.size()-1)))<=0)
+            {
+                
+                ans.remove(ans.size()-1);
+            }
+            ans.add(v.get(i));
+        }
+        q.getPoints().clear();
+        for(int i=0;i<ans.size();i++)
+        {
+            System.out.println("p is "+ans.get(i).getX()+" "+ans.get(i).getY());
+            
+            q.getPoints().add(ans.get(i).getX());
+            q.getPoints().add(ans.get(i).getY());
+        }
+        q.setFill(Color.TRANSPARENT);
+        q.setStroke(Color.BLACK);
+        q.setStroke(Color.BLUE);
+        q.setStrokeWidth(1.5);
+        
+        return q;
+    }
     
     public static void main(String[] args) {
 
@@ -480,5 +543,6 @@ public class GeoMetry {
         System.out.println(onSegment(a, c, b));
         System.out.println(GeoMetry.val(a));
     }
+    
     
 }
