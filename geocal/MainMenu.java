@@ -7,12 +7,9 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -20,7 +17,6 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
@@ -200,12 +196,12 @@ public class MainMenu extends Application{
         //Graphs
         Menu graph = new Menu("Graph");
         MenuItem main = new MenuItem("Give me your Function");
-        MenuItem sin = new MenuItem("SinX");
-        MenuItem cos = new MenuItem("CosX");
-        MenuItem tan = new MenuItem("TanX");
-        MenuItem cot = new MenuItem("CotX");
-        MenuItem sec = new MenuItem("SecX");
-        MenuItem cosec = new MenuItem("CoecX");
+        MenuItem sin = new MenuItem("Sin(X)");
+        MenuItem cos = new MenuItem("Cos(X)");
+        MenuItem tan = new MenuItem("Tan(X)");
+        MenuItem cot = new MenuItem("Cot(X)");
+        MenuItem sec = new MenuItem("Sec(X)");
+        MenuItem cosec = new MenuItem("Cosec(X)");
         MenuItem log2 = new MenuItem("Log2(X)");
         MenuItem log10 = new MenuItem("Log10(X)");
         MenuItem ln = new MenuItem("Ln(X)");
@@ -216,6 +212,12 @@ public class MainMenu extends Application{
         MenuItem exp = new MenuItem("Exp(X)");
         graph.getItems().addAll(main, sin, cos, tan, cot, sec, cosec, square, cubic,sqrt, log2, log10, ln, abs, exp);
 
+        main.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                Graph.Own_graph(layout);
+            }
+        });
         sin.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
