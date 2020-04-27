@@ -22,13 +22,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import static geocal.GeoCircle.click;
-import static geocal.GeoCircle.point;
-import static geocal.GeoCircle.showPoint;
-import static geocal.GeoCircle.temp;
-import static geocal.Triangle.TriangleMap;
-import static geocal.Triangle.id;
-import static geocal.Triangle.temp;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.scene.Scene;
@@ -49,7 +42,7 @@ public class GeoLine extends Line{
     static final int TOTAL = 600;
     public static int click;
     public static Point point[] = new Point[TOTAL];
-    public static Map<Integer, GeoCircle> TriangleMap = new HashMap();
+    public static Map<Integer, GeoCircle> LineMap = new HashMap();
     public static List<Integer> temp = new ArrayList<Integer>();
     public List<Integer> ids = new ArrayList<Integer>();
     public static Integer id =0;
@@ -59,10 +52,10 @@ public class GeoLine extends Line{
     GeoLine(double a,double b,double C)
     {
 //        menu.add(perp_through);
+        this();
         v.setX(b);
         v.setY(-a);
         c=C*MainMenu.factor;
-        menu.addForLine();
         calibrate();
         
     }
@@ -71,20 +64,21 @@ public class GeoLine extends Line{
 //        menu.add(perp_through);
         v=p;
         c=C;
-        menu.addForLine();
         calibrate();
     }
     GeoLine(Point p,Point q)
     {
-        System.out.println(p.getX()+" "+p.getY());
-        System.out.println(q.getX()+" "+q.getY());
         p= GeoMetry.sub(q,p);
         v=p;
         c=GeoMetry.cross(p,q);
-        menu.addForLine();
         calibrate();
     }
     GeoLine() {
+        menu.addForLine();
+        setStartX(0);
+        setStartY(0);
+        setEndX(0);
+        setEndY(0);
         c=0;
     }
     static void showPoint(Point pp,Pane layout)
@@ -92,7 +86,7 @@ public class GeoLine extends Line{
         GeoCircle cc = new GeoCircle(pp);
         cc.setRadius(2);
         cc.setFill(Color.BLUE);
-        TriangleMap.put(id, cc);
+        LineMap.put(id, cc);
         temp.add(id++);
 
         layout.getChildren().addAll(cc, cc.menu.getLabel());
@@ -100,10 +94,9 @@ public class GeoLine extends Line{
         //Event handler to remove it
         SmallMenu.menuSet(cc);
     }
-    public GeoLine perpThrough(Point p)
+    private GeoLine perpThrough(Point p)
     {
         Point q=GeoMetry.add(p,v.perp());
-        System.out.println(p.getX()+" "+q.getX()+" "+v.perp().getX());
         return new GeoLine(p,q);
     }
    
@@ -134,8 +127,8 @@ public class GeoLine extends Line{
     void remove()
     {
         this.ids.forEach((Integer x) -> {
-            ((Pane)this.getParent()).getChildren().remove((TriangleMap.get(x)).menu.getLabel());
-            ((Pane)this.getParent()).getChildren().remove(TriangleMap.get(x));
+            ((Pane)this.getParent()).getChildren().remove((LineMap.get(x)).menu.getLabel());
+            ((Pane)this.getParent()).getChildren().remove(LineMap.get(x));
         });
         ((Pane)this.getParent()).getChildren().remove(this.menu.lbl);
         ((Pane)this.getParent()).getChildren().remove(this);
@@ -148,68 +141,86 @@ public class GeoLine extends Line{
         if(MainMenu.move)
             return ;
 //        GeoLine l = new GeoLine();
-        layout.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        GeoLine l = new GeoLine();
+        layout.getChildren().add(l);
+        layout.setOnMouseClicked(new EventHandler<MouseEvent>(){
             @Override
-            
-            public void handle(MouseEvent event) {
-                if(MainMenu.move)
-                    return ;
-                GeoCircle cl=new GeoCircle();
-                if(event.getButton()!=MouseButton.SECONDARY) 
-                {
-                    click++;
-                    if(click%2==1)
+            public void handle(MouseEvent event)
+            {
+                Point p = new Point(event.getX(),event.getY());
+                showPoint(p,layout);
+                layout.setOnMouseMoved(new EventHandler<MouseEvent>(){
+                    @Override
+                    public void handle(MouseEvent event)
                     {
-                        point[click]=new Point(event.getX(),event.getY());
-                        showPoint(point[click],layout);
-//                        GeoCircle.showPoint(pp, (GeoPane) layout.getParent(),true);
-                    }
-                    else
-                    {
-                        point[click]=new Point(event.getX(),event.getY());
-                        showPoint(point[click],layout);
-                        double mx,my;
-                        mx=(point[click].getX()+point[click-1].getX())/2;
-                        my=(point[click].getY()+point[click-1].getY())/2;
-                        //Draw Line                        
-                        GeoLine l = new GeoLine(point[click],point[click-1]); 
-                        l.menu.set(mx, my);
-                        setPoints(l);
-                        layout.getChildren().add(l.menu.getLabel());
+                        Point q = new Point(event.getX(),event.getY());
+                        l.v=new GeoLine(p,q).v;
+                        l.c=new GeoLine(p,q).c;
                         l.calibrate();
-                        
-                        layout.getChildren().add(l);
-                        //Event handler to remove it
-                        SmallMenu.menuSet(l);
-                       
                     }
-                }
-                event.consume();
-                return ;
+                });
+                layout.setOnMouseClicked(new EventHandler<MouseEvent>(){
+                        @Override
+                        public void handle(MouseEvent event)
+                        {
+                            layout.setOnMouseMoved(null);
+                            layout.setOnMouseClicked(null);
+                            Point q = new Point(event.getX(),event.getY());
+                            showPoint(q,layout);
+                            l.v=new GeoLine(p,q).v;
+                            l.c=new GeoLine(p,q).c;
+                            l.calibrate();
+                            double mx,my;
+                            mx=(p.getX()+q.getX())/2;
+                            my=(p.getY()+q.getY())/2;
+                            l.menu.set(mx, my);
+                            setPoints(l);
+                            layout.getChildren().add(l.menu.getLabel());
+                            l.calibrate();
+                            //Event handler to remove it
+                            SmallMenu.menuSet(l);
+                            
+                            
+                            
+                        }
+
+                });
             }
-            });
-        return ;
+            
+            
+        });
+        
     }
     static void drawPerp(Pane layout,GeoLine L)
     {
-        layout.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
+        GeoLine l=new GeoLine();
+        layout.getChildren().add(l);
+        layout.setOnMouseMoved((MouseEvent event) -> {
+            if(MainMenu.move)
+                return ;
+            Point p = new Point(event.getX(),event.getY());
+            GeoLine temp1 = L.perpThrough(p);
+            l.v = temp1.v;
+            l.c = temp1.c;
+            l.calibrate();
+        });
+        layout.setOnMouseClicked((MouseEvent event) -> {
+            if(MainMenu.move)
+                return ;
+            layout.setOnMouseMoved(null);
+            layout.setOnMouseClicked(null);
             
-            public void handle(MouseEvent event) {
-                if(MainMenu.move)
-                    return ;
-                System.out.println("CHaal");
-                Point p = new Point(event.getX(),event.getY());
-                GeoLine l= L.perpThrough(p);
-                SmallMenu.menuSet(l);
-                l.calibrate();
-                l.menu.set(event.getX(), event.getY());
-                layout.getChildren().add(l.menu.getLabel());
-                layout.getChildren().add(l);
-                MainMenu.move=true;
-                event.consume();
-            }
-            });
+            Point p = new Point(event.getX(),event.getY());
+            GeoLine temp1 = L.perpThrough(p);
+            l.c = temp1.c;
+            l.v = temp1.v;
+            SmallMenu.menuSet(l);
+            l.calibrate();
+            l.menu.set(event.getX(), event.getY());
+            layout.getChildren().add(l.menu.getLabel());
+            MainMenu.move=true;
+            event.consume();
+        });
     }
     public static void DrawFromEquation(Pane layout){
         if(MainMenu.move)
@@ -235,29 +246,26 @@ public class GeoLine extends Line{
         window.setScene(scene);
         //window.showAndWait();
         window.show();
-
-        submit.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent ae) {
-                String X = A.getText();
-                String Y = B.getText();
-                String Z = C.getText();
-                double a = new Double(X);
-                double b = new Double(Y);
-                double c = new Double(Z);
-                GeoLine l = new GeoLine(a,b,c);
-                l.calibrate();
-                layout.getChildren().add(l);
-                if(b!=0)
-                l.menu.set(0, c/b);
-                else
-                    l.menu.set(c,c);
-                layout.getChildren().add(l.menu.lbl);
-                setPoints(l);
-                SmallMenu.menuSet(l);
-                
+        
+        submit.setOnAction((ActionEvent ae) -> {
+            window.close();
+            String X = A.getText();
+            String Y = B.getText();
+            String Z = C.getText();
+            double a = new Double(X);
+            double b = new Double(Y);
+            double c1 = new Double(Z);
+            GeoLine l = new GeoLine(a, b, c1);
+            l.calibrate();
+            layout.getChildren().add(l);
+            if (b!=0) {
+                l.menu.set(0, c1 / b);
+            } else {
+                l.menu.set(c1, c1);
             }
+            layout.getChildren().add(l.menu.lbl);
+            setPoints(l);
+            SmallMenu.menuSet(l);
         });
 
 
