@@ -206,6 +206,30 @@ public class MainMenu extends Application{
                 e.consume();
             }
         });
+        
+        //Conic
+        Menu conic = new Menu("Conic");
+        MenuItem ellipse = new MenuItem("Ellipse");
+        MenuItem parabola = new MenuItem("Parabola");
+        conic.getItems().addAll(ellipse,parabola);
+        
+        ellipse.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                move=false;
+                GeoEllipse.Draw_Ellipse(layout);
+                e.consume();
+            }
+        });
+        parabola.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                move=false;
+                GeoParabola.Parabola(layout);
+                e.consume();
+            }
+        });
+        
         //Graphs
         Menu graph = new Menu("Graph");
         MenuItem main = new MenuItem("Give me your Function");
@@ -322,8 +346,6 @@ public class MainMenu extends Application{
         MenuItem all_clr = new MenuItem("Clear All");
         clear.getItems().add(all_clr);
         mv.getItems().add(Move_graph);
-        //Main menu bar
-        MenuBar menuBar = new MenuBar();
         Move_graph.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
@@ -339,7 +361,11 @@ public class MainMenu extends Application{
             }
             
         });
-        menuBar.getMenus().addAll(circle,pt,vec,line,poly,graph,mv,clear);
+        
+        //Main menu bar
+        MenuBar menuBar = new MenuBar();
+        menuBar.getMenus().addAll(circle,pt,vec,line,poly,conic,graph,mv,clear);
+        
         //add graph paper
         root.addRow(1, layout);
         //add menubar
