@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package geocal;
 import static geocal.GeoCircle.CircleMap;
 import static geocal.Triangle.TriangleMap;
@@ -49,6 +44,23 @@ public class SmallMenu {
         lbl.setContextMenu(list);
         Rotate rotate = new Rotate(180, Rotate.X_AXIS);
         lbl.getTransforms().add(rotate);
+        
+        lbl.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent Event) {
+                if (!Event.isPrimaryButtonDown()) {
+                    lbl.getScene().setCursor(Cursor.HAND);
+                }
+            }
+        });
+        lbl.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent Event) {
+                if (!Event.isPrimaryButtonDown()) {
+                    lbl.getScene().setCursor(Cursor.DEFAULT);
+                }
+            }
+        });
     }
     public SmallMenu(double x, double y)
     {
@@ -81,9 +93,13 @@ public class SmallMenu {
     public void HideLabel()
     {
         lbl.setText("");
-        name="";
-        decrease();
         lbl.setDisable(true);
+    }
+    public void ShowLabel()
+    {    
+        this.lbl.setText(name);
+        this.lbl.setTextFill(Color.BROWN);
+        this.lbl.setDisable(false);
     }
     private void increase()
     {
@@ -154,7 +170,12 @@ public class SmallMenu {
         this.list.getItems().add(hideR);
         this.list.getItems().add(rotate);
     }
-    
+    //Menu Item adding for Ellipse
+    public void addForEllipse()
+    {
+        rename = new MenuItem("Rename");
+        this.list.getItems().add(rename);
+    }
     
     /**
      * Menu setting for GeoCircle
@@ -432,6 +453,37 @@ public class SmallMenu {
         
         
     }
+    
+    /**
+     * Menu setting for Ellipse 
+     */
+    public static void menuSet(GeoEllipse ellipse)
+    {
+        //Menu showing
+        ellipse.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getButton()==MouseButton.SECONDARY)
+                {
+                    ellipse.menu.list.show(ellipse.menu.lbl, Side.BOTTOM, 0, 0);
+                }
+            }
+        });
+        //Action setup            
+        ellipse.menu.rename.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                ellipse.menu.Rename();
+            }
+        });
+        ellipse.menu.delete.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                GeoEllipse.Delete(ellipse);
+            }
+        });
+    }
+    
     
     /**
      * Rename Label
