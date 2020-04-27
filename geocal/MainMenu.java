@@ -7,9 +7,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -17,6 +20,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
@@ -108,7 +112,16 @@ public class MainMenu extends Application{
 
         //vector menu
         Menu vec = new Menu("Vector");
-
+        MenuItem vc=new MenuItem("New Vector");
+        vec.getItems().add(vc);
+        vec.setOnAction(new EventHandler<ActionEvent>(){
+            @Override 
+            public void handle(ActionEvent ev)
+            {
+                move=false;
+                GeoVector.draw(layout.chld);
+            }
+        });
         //Line menu
         Menu line = new Menu("Line");
         MenuItem line_p = new MenuItem("Draw Line");
@@ -211,7 +224,6 @@ public class MainMenu extends Application{
         MenuItem abs = new MenuItem("Abs(X)");
         MenuItem exp = new MenuItem("Exp(X)");
         graph.getItems().addAll(main, sin, cos, tan, cot, sec, cosec, square, cubic,sqrt, log2, log10, ln, abs, exp);
-
         main.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
