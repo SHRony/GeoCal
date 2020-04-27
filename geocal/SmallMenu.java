@@ -35,7 +35,7 @@ public class SmallMenu {
     public Label lbl = new Label();
     
     final public ContextMenu list;
-    public MenuItem delete, rename, inward, circled,perp,editHeight,editWidth,showhull,hidehull, editLength, editVertices;
+    public MenuItem delete, rename, inward, circled,perp,editHeight,editWidth,showhull,hidehull, editLength, editVertices,showR,hideR,rotate;
     
     public SmallMenu()
     {
@@ -142,6 +142,17 @@ public class SmallMenu {
     {
         perp=new MenuItem("Perpendicular Line through Selected Point");
         this.list.getItems().add(perp);
+    }
+    
+    //Menu Item adding for Line
+    public void addForVector()
+    {
+        showR=new MenuItem("Show Resultant");
+        hideR=new MenuItem("Hide Resultant");
+        rotate=new MenuItem("Rotate");
+        this.list.getItems().add(showR);
+        this.list.getItems().add(hideR);
+        this.list.getItems().add(rotate);
     }
     
     
@@ -376,20 +387,49 @@ public class SmallMenu {
                 }
             }
         });
-        l.menu.delete.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent e) {
-                l.remove();
+        l.menu.delete.setOnAction((ActionEvent e) -> {
+            l.remove();
+        });
+        l.menu.perp.setOnAction((ActionEvent e) -> {
+            MainMenu.move=false;
+            e.consume();
+            GeoLine.drawPerp((Pane) l.getParent(),l);
+        });
+        
+    }
+    //Menu setting for Vector
+    static public void menuSet(GeoVector l)
+    {
+        //show menu
+        
+        l.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getButton()==MouseButton.SECONDARY)
+                {   
+//                    l.menu.lbl.setLayoutY(event.getY());
+//                    l.menu.lbl.setLayoutX(event.getX());
+                    l.menu.list.show(l.menu.lbl, Side.BOTTOM, 0, 0);
+                }
             }
         });
-        l.menu.perp.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-             public void handle(ActionEvent e) {
-                MainMenu.move=false;
-                e.consume();
-                GeoLine.drawPerp((Pane) l.getParent(),l);
-            }
+        l.menu.delete.setOnAction((ActionEvent e) -> {
+            l.remove();
         });
+        l.menu.showR.setOnAction((ActionEvent e) -> {
+            GeoVector.showRes((Pane) l.getParent());
+            
+            e.consume();
+        });
+        
+        l.menu.hideR.setOnAction((ActionEvent e) -> {
+            GeoVector.hideRes((Pane) l.getParent());
+            e.consume();
+        });
+        l.menu.rotate.setOnAction(( ActionEvent  ev) -> {
+            l.rotate();
+        });
+        
         
     }
     
