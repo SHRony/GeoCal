@@ -35,14 +35,16 @@ public class GeoCircle extends Circle{
         this.setFill(Color.TRANSPARENT);
         this.setStroke(Color.BLACK);
         this.setStrokeWidth(1.5);
+        menu=new SmallMenu();
+        menu.addForCircle();
     }
     GeoCircle(Point pp)
     {
         this();
         this.setCenterX(pp.getX());
         this.setCenterY(pp.getY());
-        menu = new SmallMenu(pp);
-        menu.addForCircle(); //MenuItem Add
+        menu.set(pp.getX(), pp.getY());
+         //MenuItem Add
     }
     GeoCircle(Point pp, double r)
     {
@@ -143,37 +145,40 @@ public class GeoCircle extends Circle{
     {
         temp.clear();
         click = 0;
-        
-        layout.chld.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if(MainMenu.move)
-                    return ;
-                if(event.getButton()!=MouseButton.SECONDARY) 
-                {
+        GeoCircle circle = new GeoCircle();
+        circle.setRadius(0);
+        layout.chld.getChildren().add(circle);
+        layout.chld.setOnMouseClicked((MouseEvent event) -> {
+            if(MainMenu.move)
+                return ;
+            if (event.getButton()!=MouseButton.SECONDARY) {
                     click++;
-                    if(click%2==1)
-                    {
-                        point[click].setX(event.getX());
-                        point[click].setY(event.getY());
-                        showPoint(point[click], layout, false);
-                    }
-                    else
-                    {
-                        point[click].setX(event.getX());
-                        point[click].setY(event.getY());
+                    point[click].setX(event.getX());
+                    point[click].setY(event.getY());
+                    circle.setCenterX(event.getX());
+                    circle.setCenterY(event.getY());
+                    circle.menu.set(event.getX(), event.getY());
+                    showPoint(point[click], layout, false);
+                    
+                    layout.chld.setOnMouseMoved((MouseEvent move) -> {
+                        circle.setRadius(GeoMetry.distance(new Point(circle.getCenterX(),circle.getCenterY()), new Point(move.getX(),move.getY())));
+                    });
+                    layout.chld.setOnMouseClicked((MouseEvent ev) -> {
+                        layout.chld.setOnMouseClicked(null);
+                        layout.chld.setOnMouseMoved(null);
+                        click++;
+                        point[click].setX(ev.getX());
+                        point[click].setY(ev.getY());
                         showPoint(point[click], layout, true);
-
                         //Draw circle
                         double r = GeoMetry.distance(point[click], point[click-1]);
-                        GeoCircle circle = new GeoCircle(point[click-1], r);
+                        
                         setCircle(circle);
-                        layout.chld.getChildren().addAll(circle,circle.menu.getLabel());
- 
+                        circle.setRadius(r);
+                        layout.chld.getChildren().addAll(circle.menu.getLabel());
                         //Event handler to remove it
                         SmallMenu.menuSet(circle);
-                    }
-                }
+                    });     
             }
         });
     }
