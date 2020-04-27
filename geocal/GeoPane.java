@@ -67,7 +67,8 @@ public class GeoPane extends GridPane{
     void apply_zoom(double factor)
     {
         Scale scale = new Scale();
-
+        boolean vec=GeoVector.isResVisible;
+        GeoVector.showRes(chld);
         for (Node component : chld.getChildren()) {
             if (component instanceof Line)
             {
@@ -84,7 +85,15 @@ public class GeoPane extends GridPane{
                     ((GeoLine)component).c*=factor;
                     ((GeoLine)component).calibrate();
                 }
+                else if(component instanceof GeoVector)
+                {
+                    ((GeoVector)component).p.setX(((GeoVector)component).p.getX()*factor);
+                    ((GeoVector)component).p.setY(((GeoVector)component).p.getY()*factor);
+                    ((GeoVector)component).calibrate();
+                    
+                }
             }
+            
             
             else if(component instanceof Circle)
             {
@@ -109,13 +118,22 @@ public class GeoPane extends GridPane{
                 
                 
             }
+            else if(component instanceof GeoGon)
+            {
+                for(int i=0;i< ((GeoGon) component).vec.size();i++)
+                {
+                    ((GeoGon) component).vec.get(i).setX(((GeoGon) component).vec.get(i).getX()*factor);
+                    ((GeoGon) component).vec.get(i).setY(((GeoGon) component).vec.get(i).getY()*factor);
+                }
+                scale.setX(component.getScaleX() * factor);
+                scale.setY(component.getScaleY() * factor);
+                component.getTransforms().add(scale);
+            }
             else if(component instanceof Polygon)
             {
                 scale.setX(component.getScaleX() * factor);
                 scale.setY(component.getScaleY() * factor);
                 component.getTransforms().add(scale);
-
-
             }
             else if(component instanceof Label)
             {
@@ -128,6 +146,7 @@ public class GeoPane extends GridPane{
                 
             }
         }
+        if(!vec) GeoVector.hideRes(chld);
     }
     
     void mouse_click(MouseEvent ev)
@@ -144,9 +163,11 @@ public class GeoPane extends GridPane{
     }
     void clear()
     {
+        GeoVector.hideRes(chld);
+        GeoVector.res.p=new Point(0,0);
         List<Node> nodesToRemove = new ArrayList<>();
         for (Node component : chld.getChildren()) {
-            if (component instanceof Line&&!(component instanceof GeoLine))
+            if (component instanceof Line&&!(component instanceof GeoLine)&&!(component instanceof GeoVector))
             {
                  if(((Line) component).getFill()==Color.TRANSPARENT)
                     nodesToRemove.add(component);
