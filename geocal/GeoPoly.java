@@ -32,10 +32,10 @@ import javafx.stage.StageStyle;
  */
 public class GeoPoly {
     
-    Polygon poly,hull;
+    Polygon hull;
+    GeoGon poly;
     boolean isHullReady=false,isHullVisible=false;
     ObservableList<Double> points;
-    Vector<Point> vec=new Vector<Point>();
     public static Map<Integer, GeoCircle> PolyMap = new HashMap();
     public static List<Integer> temp = new ArrayList<Integer>();
     public List<Integer> ids = new ArrayList<Integer>();
@@ -53,7 +53,7 @@ public class GeoPoly {
     
     GeoPoly()
     {
-        poly = new Polygon();
+        poly = new GeoGon();
         hull = new Polygon();
         poly.setFill(Color.TRANSPARENT);
         poly.setStroke(Color.BLACK);
@@ -69,7 +69,7 @@ public class GeoPoly {
         else
         {
             this.isHullReady=true;
-            this.hull=GeoMetry.ConvexHull(this.vec);
+            this.hull=GeoMetry.ConvexHull(this.poly.vec);
         }
         if(!this.isHullVisible)
         {
@@ -161,7 +161,7 @@ public class GeoPoly {
         ((Pane)p.poly.getParent()).getChildren().remove(p.poly);
         p.points.clear();
         p.ids.clear();
-        p.vec.clear();
+        p.poly.vec.clear();
     }
     
     public static void DrawPoly(GeoPane layout)
@@ -187,7 +187,7 @@ public class GeoPoly {
                     newPoints.clear();
                     newPoints.addAll(p.points);
                     Point pp = new Point(event.getX(), event.getY());
-                    p.vec.add(pp);
+                    p.poly.vec.add(pp);
                     p.isHullReady=false;
                     if(p.isHullVisible)
                         layout.chld.getChildren().remove(p.hull);
