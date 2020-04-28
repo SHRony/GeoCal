@@ -1,0 +1,142 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package geocal;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import javafx.stage.Stage;
+
+/**
+ *
+ * @author Administrator
+ */
+public class GeoVector extends Line{
+    static GeoVector res=new GeoVector(0,0);
+    static boolean isResVisible=false;
+    Point p;
+    SmallMenu menu=new SmallMenu();
+    static void showRes(Pane layout)
+    {
+        System.out.println("wow just amazing");
+        res.calibrate();
+        res.setStroke(Color.RED);
+        if(isResVisible) return;
+        isResVisible=true;
+        layout.getChildren().add(res);
+    }
+    static void hideRes(Pane layout)
+    {
+        if(!isResVisible)
+            return;
+        isResVisible=false;
+        layout.getChildren().remove(res);
+    }
+    GeoVector(Point P)
+    {
+        super(0,0,P.getX(),P.getY());
+        this.setStroke(Color.DEEPSKYBLUE);
+        p=P;
+    }
+    GeoVector()
+    {
+        super();
+        this.setStrokeWidth(2);
+        this.setStroke(Color.DEEPSKYBLUE);
+        p=new Point();
+    }
+    GeoVector(double x,double y)
+    {
+        this(new Point(x,y));
+    }
+    void calibrate()
+    {
+        setEndX(p.getX());
+        setEndY(p.getY());
+    }
+    void rotate()
+    {
+        
+        Stage window = new Stage();
+        window.setTitle("Enter Angle");
+        TextField tField=new TextField();
+        Button submit=new Button("Submit");
+        GridPane root= new GridPane();
+        root.addRow(0, tField);
+        root.addRow(1, submit);
+        Scene scene = new Scene(root);
+        window.setScene(scene);
+        window.show();
+        res.p.setX(res.p.getX()-this.p.getX());
+        res.p.setY(res.p.getY()-this.p.getY());
+        submit.setOnAction((ActionEvent ae) -> {
+            double angle=0;
+            window.close();
+            String X = tField.getText();
+            angle=new Double(X);
+            angle=angle*Math.PI/180.0;
+            p=GeoMetry.rotation(new Point(0,0), p, angle);
+            calibrate();
+            res.p.setX(res.p.getX()+this.p.getX());
+            res.p.setY(res.p.getY()+this.p.getY());
+            res.calibrate();
+            this.menu.set(this.p.getX(),this.p.getY());
+            
+        });
+    }
+    void remove()
+    {
+        res.p.setX(res.p.getX()-this.p.getX());
+        res.p.setY(res.p.getY()-this.p.getY());
+        hideRes(((Pane)this.getParent()));
+        ((Pane)this.getParent()).getChildren().remove(this.menu.lbl);
+        ((Pane)this.getParent()).getChildren().remove(this);
+    }
+    static void draw(Pane layout)
+    {
+        if(MainMenu.move)
+            return ;
+        GeoVector l=new GeoVector(0,0);
+        l.setStrokeWidth(2);
+        layout.getChildren().add(l);
+        layout.setOnMouseMoved((MouseEvent hover1) -> {
+            if(MainMenu.move)
+            {
+                return ;
+            }
+            l.p = new Point(hover1.getX(), hover1.getY());
+            l.calibrate();
+            layout.setOnMouseClicked((MouseEvent clck) -> {
+                res.p.setX(res.p.getX()+l.p.getX());
+                res.p.setY(res.p.getY()+l.p.getY());
+                res.calibrate();
+                l.menu.addForVector();
+                l.menu.set(l.p.getX(),l.p.getY());
+                layout.getChildren().add(l.menu.lbl);
+                SmallMenu.menuSet(l);
+                layout.setOnMouseClicked(null);
+                layout.setOnMouseMoved(null);
+                MainMenu.move=true;
+                
+                return ;
+            });
+        });
+        if(MainMenu.move)
+            return ;
+        
+    }
+}
