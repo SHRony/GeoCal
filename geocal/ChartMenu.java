@@ -117,8 +117,52 @@ public class ChartMenu extends Application{
             }
             
         });
-        Menu area = new Menu("Area Chart");
+        
+        
         Menu bar = new Menu("Bar Chart");
+        MenuItem input_bar = new MenuItem("Input Data");
+        MenuItem add_bar = new MenuItem("Add another data");
+        MenuItem down_bar = new MenuItem("Download Data");
+        MenuItem delete_bar = new MenuItem("Delete Chart");
+        bar.getItems().addAll(input_bar, add_bar, down_bar, delete_bar);
+        input_bar.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+                event.consume();
+                Bar_Chart.bar(layout);
+            }
+            
+        });
+        add_bar.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+                event.consume();
+                Bar_Chart.Add();
+            }
+            
+        });
+        down_bar.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+                event.consume();
+                try {
+                    Bar_Chart.Download();
+                } catch (IOException ex) {
+                    Logger.getLogger(ChartMenu.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+        });
+        delete_bar.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+                event.consume();
+                Bar_Chart.Delete();
+            }
+            
+        });
+        
+        Menu area = new Menu("Area Chart");
         Menu bubble = new Menu("Bubble Chart");
         Menu scatter = new Menu("Scatter Chart");
         
