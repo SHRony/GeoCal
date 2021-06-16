@@ -5,30 +5,32 @@
  */
 package geocal;
 
-/**
- *
- * @author Administrator
- */
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Vector;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
+import javafx.geometry.Insets;
 import javafx.geometry.Side;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import java.util.HashMap;
-import java.util.Map;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 /**
@@ -36,241 +38,345 @@ import javafx.stage.Stage;
  * @author Administrator
  */
 public class GeoLine extends Line{
-    Point v=new Point();
-    SmallMenu menu=new SmallMenu(0,0);
-//    MenuItem perp_through=new MenuItem("Perpendicular Line Through a Point");
-    static final int TOTAL = 600;
-    public static int click;
-    public static Point point[] = new Point[TOTAL];
-    public static Map<Integer, GeoCircle> LineMap = new HashMap();
-    public static List<Integer> temp = new ArrayList<Integer>();
-    public List<Integer> ids = new ArrayList<Integer>();
-    public static Integer id =0;
-    double c;
-    static Point p1=new Point();
-    static Point p2=new Point();
-    GeoLine(double a,double b,double C)
+    Vector<GeoPoint> v = new Vector<GeoPoint>();
+    Vector dependent = new Vector();
+    Label name = new Label();
+    double sx,sy,ex,ey;
+    GeoLine()
     {
-//        menu.add(perp_through);
-        this();
-        v.setX(b);
-        v.setY(-a);
-        c=C*MainMenu.factor;
-        calibrate();
-        
-    }
-    GeoLine(Point p,double C)
-    {
-//        menu.add(perp_through);
-        v=p;
-        c=C;
-        calibrate();
-    }
-    GeoLine(Point p,Point q)
-    {
-        p= GeoMetry.sub(q,p);
-        v=p;
-        c=GeoMetry.cross(p,q);
-        calibrate();
-    }
-    GeoLine() {
-        menu.addForLine();
-        setStartX(0);
-        setStartY(0);
-        setEndX(0);
-        setEndY(0);
-        c=0;
-    }
-    static void showPoint(Point pp,Pane layout)
-    {
-        GeoCircle cc = new GeoCircle(pp);
-        cc.setRadius(2);
-        cc.setFill(Color.BLUE);
-        LineMap.put(id, cc);
-        temp.add(id++);
-
-        layout.getChildren().addAll(cc, cc.menu.getLabel());
-
-        //Event handler to remove it
-        SmallMenu.menuSet(cc);
-    }
-    private GeoLine perpThrough(Point p)
-    {
-        Point q=GeoMetry.add(p,v.perp());
-        return new GeoLine(p,q);
-    }
-   
-    Void calibrate()
-    {
-        this.setStrokeWidth(2);
-        this.setStartX(-7500);
-        this.setStartX(-10000*v.getX());
-        this.setStartY(-10000*v.getY());
-        this.setEndX(10000*v.getX());
-        this.setEndY(10000*v.getY());
-        if(v.getY()!=0)
-        {
-            this.setTranslateX(-c/v.getY());
-        }
-        else
-        {
-            this.setStartY(c);
-            this.setEndY(c);
-        }
-        return null;
-    }
-    public static void setPoints(GeoLine geo)
-    {
-        geo.ids.addAll(temp);
-        temp.clear();
-    }
-    void remove()
-    {
-        this.ids.forEach((Integer x) -> {
-            ((Pane)this.getParent()).getChildren().remove((LineMap.get(x)).menu.getLabel());
-            ((Pane)this.getParent()).getChildren().remove(LineMap.get(x));
+        sx=sy=ex=ey=0;
+        Tooltip tt= new Tooltip("Line");
+        Tooltip.install(this, tt);
+        tt.setOpacity(0.5);
+        this.setOnMouseEntered(GraphHome.cursorHand);
+        this.setOnMouseExited(GraphHome.cursorDefault);
+        this.setOnMousePressed((MouseEvent ev)->{
+            GraphHome.gPaper.getScene().setCursor(Cursor.CLOSED_HAND);
+            this.setOnMouseEntered(null);
+            this.setOnMouseExited(null);
         });
-        ((Pane)this.getParent()).getChildren().remove(this.menu.lbl);
-        ((Pane)this.getParent()).getChildren().remove(this);
+        
+        this.setOnMouseReleased((MouseEvent ev)->{
+            GraphHome.gPaper.getScene().setCursor(Cursor.HAND);
+            this.setOnMouseEntered(GraphHome.cursorHand);
+            this.setOnMouseExited(GraphHome.cursorDefault);
+        });
+        name.setText(GraphHome.genName());
+        strokeWidthProperty().bind(GraphHome.gPaper.BalanceFactor.multiply(4));
+    }
+    void calibrate()
+    {
+        
+        int dx=(int) (ex-sx);
+        int dy=(int) (ey-sy);
+        double numb=1;
+//        
+//        if(Math.max(dx, dy)>0.0000000000000001)
+//        {
+        try{
+            int x=1/(Math.max(dx, dy));
+            if(dx==0)
+                numb=(5000-ey)/dy;
+            else if(dy==0)
+                numb=(5000-ex)/dx;
+            else
+                numb=Math.min((5000-ey)/dy,(5000-ex)/dx);
+            this.setEndX(ex+(dx)*numb);
+            this.setEndY(ey+(dy)*numb);
+            numb=1;
+            if(dy==0)
+                numb=(sx+5000)/dx;
+            else if(dx==0)
+                numb=(sy+5000)/dy;
+            else
+                numb=Math.min((5000+sy)/dy,(5000+sx)/dx);
+            this.setStartX(sx-dx*numb);
+            this.setStartY(sy-dy*numb);
+        }
+        catch(Exception e)
+        {
+            System.out.println(e);
+        }
+//        }
+    }
+    double side(Point p)
+    {
+        Point vec = new Point(ex-sx,ey-sy);
+        return GeoMetry.cross(vec,p)-GeoMetry.cross(vec, new Point(sx,sy));
+    }
+    Point project(Point p)
+    {
+        Point vec = new Point(ex-sx,ey-sy);
+       
+        return GeoMetry.sub(p,GeoMetry.mul(vec.perp(),side(p)/vec.sq()));
+    }
+    Point reflection(Point p)
+    {
+        Point vec = new Point(ex-sx,ey-sy);  
+        return GeoMetry.sub(p,GeoMetry.mul(vec.perp(),2*side(p)/vec.sq()));
     }
     
-    static void draw(Pane layout)
+    void baalchaal(Pane layout)
     {
-        click=0;
-        temp.clear();
-        if(MainMenu.move)
-            return ;
-//        GeoLine l = new GeoLine();
-        GeoLine l = new GeoLine();
-        layout.getChildren().add(l);
-        layout.setOnMouseClicked(new EventHandler<MouseEvent>(){
-            @Override
-            public void handle(MouseEvent event)
-            {
-                Point p = new Point(event.getX(),event.getY());
-                showPoint(p,layout);
-                layout.setOnMouseMoved(new EventHandler<MouseEvent>(){
-                    @Override
-                    public void handle(MouseEvent event)
-                    {
-                        Point q = new Point(event.getX(),event.getY());
-                        l.v=new GeoLine(p,q).v;
-                        l.c=new GeoLine(p,q).c;
-                        l.calibrate();
-                    }
-                });
-                layout.setOnMouseClicked(new EventHandler<MouseEvent>(){
-                        @Override
-                        public void handle(MouseEvent event)
-                        {
-                            layout.setOnMouseMoved(null);
-                            layout.setOnMouseClicked(null);
-                            Point q = new Point(event.getX(),event.getY());
-                            showPoint(q,layout);
-                            l.v=new GeoLine(p,q).v;
-                            l.c=new GeoLine(p,q).c;
-                            l.calibrate();
-                            double mx,my;
-                            mx=(p.getX()+q.getX())/2;
-                            my=(p.getY()+q.getY())/2;
-                            l.menu.set(mx, my);
-                            setPoints(l);
-                            layout.getChildren().add(l.menu.getLabel());
-                            l.calibrate();
-                            //Event handler to remove it
-                            SmallMenu.menuSet(l);
-                            
-                            
-                            
-                        }
-
-                });
-            }
-            
-            
+        layout.setOnMouseClicked((MouseEvent event)->{
+            GraphHome.buttonPressed();
+            Point p = project(new Point(event.getX(),event.getY()));
+            System.out.println(event.getX()+" "+p.getX());
+            GeoPoint q = new GeoPoint(p.getX(),p.getY(),GraphHome.gPaper.BalanceFactor);
+            q.add(layout);
         });
-        
     }
-    static void drawPerp(Pane layout,GeoLine L)
+    public static void draw(Pane layout)
     {
-        GeoLine l=new GeoLine();
-        layout.getChildren().add(l);
-        layout.setOnMouseMoved((MouseEvent event) -> {
-            if(MainMenu.move)
-                return ;
-            Point p = new Point(event.getX(),event.getY());
-            GeoLine temp1 = L.perpThrough(p);
-            l.v = temp1.v;
-            l.c = temp1.c;
-            l.calibrate();
+        GraphHome.clickedPoints.clear();
+        GraphHome.vSize.set(0);
+        GeoLine line = new GeoLine();
+        layout.getChildren().add(line);
+        GraphHome.temporary.add(line);
+        for(GeoPoint demo: GraphHome.currentPoints)
+        {
+            if(!demo.independent)
+                demo.flicker();
+        }
+        for(GeoPoint demo: GraphHome.currentPoints)
+        {
+            if(demo.independent)
+                demo.flicker();
+        }
+        GraphHome.vSize.addListener(new ChangeListener<Number>(){
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                if(newValue.equals(2))
+                {
+                    if(GraphHome.clickedPoints.get(0)==GraphHome.clickedPoints.get(1))
+                    {
+                        GraphHome.clickedPoints.remove(1);
+                        GraphHome.vSize.set(GraphHome.vSize.get()-1);
+                    }
+                    else
+                    {
+                        layout.setOnMouseMoved(null);
+
+                        line.ex=(GraphHome.clickedPoints.get(1).getCenterX());
+                        line.ey=(GraphHome.clickedPoints.get(1).getCenterY());
+
+                        line.v.addAll(GraphHome.clickedPoints);
+                        line.v.get(0).flicker();
+                        line.v.get(1).flicker();
+                        line.v.get(1).dependent.add(line);
+                        line.v.get(0).dependent.add(line);
+                        GraphHome.vSize.addListener(GraphHome.nothing);
+                        layout.setOnMouseClicked(null);
+                        line.calibrate();
+                        ChangeListener change = new ChangeListener<Number>(){
+                                @Override
+                                public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+
+                                   line.sx=(line.v.get(0).getCenterX());
+                                   line.sy=(line.v.get(0).getCenterY());
+                                   line.ex=(line.v.get(1).getCenterX());
+                                   line.ey=(line.v.get(1).getCenterY());
+                                   line.calibrate();
+                                }
+                            };
+
+                        line.v.get(0).centerXProperty().addListener(change);
+                        line.v.get(0).centerYProperty().addListener(change);
+                        line.v.get(1).centerYProperty().addListener(change);
+                        line.v.get(1).centerXProperty().addListener(change);
+                        GraphHome.temporary.clear();
+                        GraphHome.buttonPressed();
+                        line.addToStack();
+                        if(GraphHome.oneTouch.isSelected())
+                        draw(layout);
+                    }
+                    
+                }
+                else if(newValue.equals(1))
+                {
+                    line.ex=line.sx=GraphHome.clickedPoints.get(0).getCenterX();
+                    line.ex=line.sy=(GraphHome.clickedPoints.get(0).getCenterY());
+                    
+                    layout.setOnMouseMoved((MouseEvent move) -> {
+                        GraphHome.showCor(move.getX(),move.getY());
+                        line.ex=move.getX();
+                        line.ey=move.getY();
+                        line.calibrate();
+                    });
+                }
+                
+            }
         });
         layout.setOnMouseClicked((MouseEvent event) -> {
-            if(MainMenu.move)
-                return ;
-            layout.setOnMouseMoved(null);
-            layout.setOnMouseClicked(null);
-            
-            Point p = new Point(event.getX(),event.getY());
-            GeoLine temp1 = L.perpThrough(p);
-            l.c = temp1.c;
-            l.v = temp1.v;
-            SmallMenu.menuSet(l);
-            l.calibrate();
-            l.menu.set(event.getX(), event.getY());
-            layout.getChildren().add(l.menu.getLabel());
-            MainMenu.move=true;
-            event.consume();
+                if(event.getButton()!=MouseButton.SECONDARY)
+                {
+                    
+                    Point p=new Point();
+                    p.setX(Math.round(event.getX()/5)*5);
+                    p.setY(Math.round(event.getY()/5)*5);
+                    GeoPoint C = new GeoPoint(p.getX(),p.getY(),GraphHome.gPaper.BalanceFactor);
+                    C.add(layout);
+                    GraphHome.temporary.add(C);
+                    GraphHome.clickedPoints.add(C);
+                    line.dependent.add(GraphHome.clickedPoints.lastElement());
+                    GraphHome.vSize.set(GraphHome.vSize.get()+1);
+                    
+                }
         });
+        
     }
-    public static void DrawFromEquation(Pane layout){
-        if(MainMenu.move)
-            return ;
+    void showDetails()
+    {
+        Vector<Node> temp = new Vector<Node>();
+        for (Node component : GraphHome.detailsBar.getChildren()) {
+            temp.add(component);
+        }
+        for(Node component:temp)
+        GraphHome.detailsBar.getChildren().remove(component);
+        GraphHome.detailsBar.getChildren().add(new Label("Segment: "+name.getText()));
+        GraphHome.detailsBar.getChildren().add(new Label("Start:"));
+        GraphHome.detailsBar.getChildren().add(new Label(String.valueOf(sx)+" "+String.valueOf(sy)));
+        GraphHome.detailsBar.getChildren().add(new Label("End:"));
+        GraphHome.detailsBar.getChildren().add(new Label(String.valueOf(ex)+" "+String.valueOf(ey)));
+        
+    }
+    void addToStack()
+    {
+        HBox hb = new HBox(10);
+        hb.setPrefWidth(190);
+        hb.setPadding(new Insets(3));
+        ColorPicker cp = new ColorPicker();
+        hb.getChildren().addAll(name,cp);
+        hb.getStyleClass().add("stklist");
+        GraphHome.stkBar.getChildren().add(hb);
+        ContextMenu cMenu = new ContextMenu();
+        MenuItem delete = new MenuItem("Remove");
+        MenuItem reName = new MenuItem("Rename");
+        MenuItem baal = new MenuItem("Baalchaal");
+        Image img = new Image("img/context_clear.jpg");
+        delete.setGraphic(new ImageView(img));
+        img = new Image("img/context_rename.png");
+        reName.setGraphic(new ImageView(img));
+        delete.getStyleClass().add("cMenu");
+        reName.getStyleClass().add("cMenu");
+        baal.getStyleClass().add("cMenu");
+        cp.setPrefWidth(40);
+        cp.setValue(Color.BLACK);
+        cp.getCustomColors().add(Color.RED);
+        cp.getCustomColors().add(Color.BLUE);
+        cp.getCustomColors().add(Color.GREEN);
+        cp.getCustomColors().add(Color.rgb(0, 255, 255, 1));
+        cp.getCustomColors().add(Color.rgb(255, 0, 255, 1));
+        cp.getCustomColors().add(Color.rgb(255, 255, 0, 1));
+        name.setPrefWidth(150);
+        this.strokeProperty().bind(cp.valueProperty());
+        this.strokeProperty().bind(cp.valueProperty());
+        cMenu.getItems().addAll(reName,delete,baal);
+        hb.setOnMouseClicked(new EventHandler<MouseEvent>(){
+            @Override
+            public void handle(MouseEvent ae)
+            {
+                if(ae.getButton()==MouseButton.SECONDARY)
+                {
+                    cMenu.show(name,Side.BOTTOM,0,0);
+                    
+                }
+                else
+                {
+                    showDetails();
+                }
+            }
+        });
 
-        temp.clear();
+        
+        this.setOnMouseClicked((MouseEvent ev)->{
+            if(ev.getButton()==MouseButton.PRIMARY)
+            {
+                GraphHome.clickedLines.add(this);
+                GraphHome.lSize.unbind();
+                GraphHome.lSize.set(GraphHome.lSize.get()+1);
+                ev.consume();
+            }
+            else
+            {
+                GraphHome.contextCor.setLayoutX(ev.getX());
+                GraphHome.contextCor.setLayoutY(ev.getY());
+                cMenu.show(GraphHome.contextCor,Side.BOTTOM,0,0);
+            }
+        });
+        
+        delete.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent ae)
+            {
+                erase();
+            }
+        });
+        reName.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent ae)
+            {
+                inputName();
+            }
+        });
+        baal.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent ae)
+            {
+                baalchaal(GraphHome.gPaper.chld);
+            }
+        });
+        
+        
+    }
+    public void inputName()
+    {
         Stage window = new Stage();
-        window.setTitle("Give input");
-
-        TextField A = new TextField();
-        A.setPromptText("Enter A");
-        TextField B = new TextField();
-        B.setPromptText("Enter B");
-        TextField C = new TextField(); 
-        C.setPromptText("Enter C");
-        Button submit = new Button("Submit");
-
+        window.setTitle("Rename");
+        TextField x = new TextField();
         GridPane root = new GridPane();
-        root.addRow(0,A,B,C);
+        Button submit = new Button("Submit");
+        root.addRow(0,x);
         root.addRow(1,submit);
-
-        Scene scene = new Scene(root, 500,200);
+        Scene scene = new Scene(root,200,60);
         window.setScene(scene);
-        //window.showAndWait();
         window.show();
         
-        submit.setOnAction((ActionEvent ae) -> {
-            window.close();
-            String X = A.getText();
-            String Y = B.getText();
-            String Z = C.getText();
-            double a = new Double(X);
-            double b = new Double(Y);
-            double c1 = new Double(Z);
-            GeoLine l = new GeoLine(a, b, c1);
-            l.calibrate();
-            layout.getChildren().add(l);
-            if (b!=0) {
-                l.menu.set(0, c1 / b);
-            } else {
-                l.menu.set(c1, c1);
+        submit.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent ae)
+            {
+                if(x.getText().isEmpty()||x.getText().length()>20)
+                {
+                    System.out.println("");
+                    Alert.display("Error...!","Name Must be between 1 to 20 charecters");
+                }
+                else
+                {
+                    String s = x.getText();
+                    name.setText(s);
+                    window.close();
+                }
             }
-            layout.getChildren().add(l.menu.lbl);
-            setPoints(l);
-            SmallMenu.menuSet(l);
         });
-
-
     }
-
-    
-    
+    void flicker()
+    {
+        Pane par = (Pane) this.getParent();
+        if(par==null) return ;
+        par.getChildren().remove(this);
+        par.getChildren().add(this);
+    }
+    void erase()
+    {
+        Node par = this.getParent();
+        if(par!=null) 
+            ((Pane)par).getChildren().remove(this);
+        for(int i=0;i<dependent.size();i++)
+        {
+            if(dependent.get(i) instanceof GeoPoint)
+            ((GeoPoint)(dependent.get(i))).remove();
+        }
+        GraphHome.stkBar.getChildren().remove(this.name.getParent());
+    }
 }
