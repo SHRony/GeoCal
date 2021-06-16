@@ -44,6 +44,8 @@ public class Pie{
         Take_Input(layout);
         piechart.setData(input);
         layout.getChildren().addAll(piechart);
+        piechart.prefHeightProperty().bind(GeoCal.scene.heightProperty().subtract(70));
+        piechart.prefWidthProperty().bind(GeoCal.scene.widthProperty());
         on=true;
     }
     public static void Percentage(Pane layout)
