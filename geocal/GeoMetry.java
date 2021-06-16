@@ -1,15 +1,17 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package geocal;
-
 import java.util.Vector;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 
 /**
- * Implementation of 2D point 
- * using rectangular coordinates
- * 
- * @author Lenovo
+ *
+ * @author Administrator
  */
 class Point {
     
@@ -42,7 +44,10 @@ class Point {
     {
         return new Point(-y,x);
     }
-    
+    public double sq()
+    {
+        return x*x+y*y;
+    }
 }
 
 /**
@@ -125,6 +130,12 @@ public class GeoMetry {
     {
         return Math.sqrt((a.getX()-b.getX())*(a.getX()-b.getX())+(a.getY()-b.getY())*(a.getY()-b.getY()));
     }
+    
+    static double distance(double a, double b,double c,double d)
+    {
+        return Math.sqrt((a-c)*(a-c)+(b-d)*(b-d));
+    }
+    
 
    
     /**
@@ -182,7 +193,6 @@ public class GeoMetry {
         double d = one.getA()*two.getB() - two.getA()*one.getB();
         if(Math.abs(d)<EPS)
         {
-            System.out.println("No solution");
             return new Point();
         }
         
@@ -381,7 +391,6 @@ public class GeoMetry {
         angle=Math.acos(x/r0);
         one=rotation(a,k,angle);
         two=rotation(a,k,-1*angle);
-        System.out.println(one.getX()+" "+one.getY()+" , "+two.getX()+" "+two.getY());
     }
     
     /**
@@ -456,7 +465,7 @@ public class GeoMetry {
      * @param C
      * @return the circle passing through A,B,C point
      */
-    public static Circle Circle3Point(Point A, Point B, Point C)
+    static Circle Circle3Point(Point A, Point B, Point C)
     {
         Circle c = new Circle();
         Equation AB = GeoMetry.make_eqn(A, B);
@@ -469,7 +478,8 @@ public class GeoMetry {
         c.setRadius(GeoMetry.distance(p, A));
         return c;
     }
-    public static Polygon ConvexHull(Vector<Point> v)
+    
+    static Polygon ConvexHull(Vector<Point> v)
     {
         Polygon q=new Polygon();
         if(v.isEmpty())
@@ -477,10 +487,8 @@ public class GeoMetry {
         Point pivot=v.get(0);
         Vector<Point> ans=new Vector<Point>();
         int idx=0;
-        System.out.println("initial array");
         for(int i=0;i<v.size();i++)
         {
-            System.out.println(v.get(i).getX()+" "+v.get(i).getY());
             if(v.get(i).getY()<pivot.getY())
             {
                 pivot=v.get(i);
@@ -504,10 +512,8 @@ public class GeoMetry {
                 }
             }   
         }
-        System.out.println("baal"+v.get(0).getX()+" "+v.get(0).getY());
         for(int i=0;i<v.size();i++)
         {
-            System.out.println(v.get(i).getX()+" "+v.get(i).getY());
             while(ans.size()>1&&cross(sub(ans.get(ans.size()-1),ans.get(ans.size()-2)),sub(v.get(i),ans.get(ans.size()-1)))<=0)
             {
                 
@@ -518,8 +524,6 @@ public class GeoMetry {
         q.getPoints().clear();
         for(int i=0;i<ans.size();i++)
         {
-            System.out.println("p is "+ans.get(i).getX()+" "+ans.get(i).getY());
-            
             q.getPoints().add(ans.get(i).getX());
             q.getPoints().add(ans.get(i).getY());
         }
@@ -527,22 +531,18 @@ public class GeoMetry {
         q.setStroke(Color.BLACK);
         q.setStroke(Color.BLUE);
         q.setStrokeWidth(1.5);
-        
         return q;
     }
-    
     public static void main(String[] args) {
-
         Point a = new Point(3,4);
         Point b = new Point(6,4);
         Point c = new Point(4,4);
         Equation I = make_eqn(a, b);
         Equation II = make_eqn(c, new Point(10, -10));
         Point d = solve_eqn(I, II);
-        System.out.println(d.getX()+" "+d.getY());
-        System.out.println(onSegment(a, c, b));
-        System.out.println(GeoMetry.val(a));
+
     }
-    
+
+
     
 }
