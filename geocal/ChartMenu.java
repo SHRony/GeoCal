@@ -1,43 +1,123 @@
 package geocal;
 
-import static geocal.MainMenu.move;
+import com.jfoenix.controls.JFXButton;
+import static geocal.GraphHome.topContainer;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  *
  * @author Lenovo
  */
-public class ChartMenu extends Application{
+public class ChartMenu{
  
-    GridPane root = new GridPane();
-    Pane layout = new Pane();
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-    
-    @Override
-    public void start(Stage ps) throws Exception {
+    static Pane layout = new Pane();
+    static BorderPane container=new BorderPane();
+    static VBox topContainer= new VBox(10);
+    static HBox topBar = new HBox(25);
+    static HBox secondBar = new HBox(25);
+   
+        public static void init(Pane root){
+        JFXButton home = new JFXButton();
+        Image imgHome = new Image("img/home.png");
+        home.setGraphic(new ImageView (imgHome));
         
-        Menu pie = new Menu("Pie Chart");
-        MenuItem input = new MenuItem("Input Data");
-        MenuItem add = new MenuItem("Add Data");
-        MenuItem down = new MenuItem("Download Data");
+        JFXButton pie = new JFXButton();
+        Image imgPie = new Image("img/pie_chart.png");
+        pie.setGraphic(new ImageView (imgPie));
         MenuItem delete = new MenuItem("Delete Chart");
-        pie.getItems().addAll(input, add, down, delete);
         
+        
+        
+        
+        JFXButton line = new JFXButton();
+        Image imgLine = new Image("img/line_chart.png");
+        line.setGraphic(new ImageView (imgLine));
+        
+        JFXButton bar = new JFXButton();
+        Image imgBar = new Image("img/bar_chart.png");
+        bar.setGraphic(new ImageView (imgBar));
+        
+        topBar.getChildren().addAll(home,pie,line,bar);
+        topContainer.getChildren().add(topBar);
+        
+        container.setTop(topContainer);
+        topContainer.setAlignment(Pos.CENTER);
+        topContainer.getStylesheets().add("img/style.css");
+        topBar.getStyleClass().add("topBar");
+        secondBar.getStyleClass().add("secondBar");
+        topBar.prefWidthProperty().bind(topContainer.widthProperty());
+        topBar.setAlignment(Pos.CENTER);
+        topContainer.getChildren().add(secondBar);
+        secondBar.setAlignment(Pos.CENTER);
+        container.setCenter(layout);
+        home.setOnAction(new EventHandler<ActionEvent>(){
+           @Override
+           public void handle(ActionEvent ae)
+           {
+               FadeTransition fadeOut = new FadeTransition(Duration.millis(500), container);
+               fadeOut.setFromValue(1);
+               fadeOut.setToValue(0);
+               fadeOut.setCycleCount(1);
+               fadeOut.play();
+               fadeOut.setOnFinished((e) -> {
+                HomePage.load(root);
+                });
+           }
+       });
+        pie.setOnAction(new EventHandler<ActionEvent>(){
+           @Override
+           public void handle(ActionEvent ae)
+           {
+               loadPieMenu();
+           }
+       });
+       
+        line.setOnAction(new EventHandler<ActionEvent>(){
+           @Override
+           public void handle(ActionEvent ae)
+           {
+               loadLineMenu();
+           }
+       });
+        bar.setOnAction(new EventHandler<ActionEvent>(){
+           @Override
+           public void handle(ActionEvent ae)
+           {
+               loadBarMenu();
+           }
+       });
+    }
+    static void loadPieMenu(){
+        JFXButton input = new JFXButton("Input Data");
+        JFXButton add = new JFXButton("Add Data");
+        JFXButton down = new JFXButton("Download Data");
+        JFXButton delete = new JFXButton("Delete");
+        
+        secondBar.getChildren().setAll(input,add,down,delete);
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(500),secondBar);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.play();
         input.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
@@ -73,14 +153,17 @@ public class ChartMenu extends Application{
             }
             
         });
-        
-        Menu line = new Menu("Line Chart");
-        MenuItem input_line = new MenuItem("Input Data");
-        MenuItem add_series = new MenuItem("Add another series");
-        MenuItem down_line = new MenuItem("Download Data");
-        MenuItem delete_line = new MenuItem("Delete Chart");
-        line.getItems().addAll(input_line, add_series, down_line, delete_line);
-        
+    }
+    static void loadLineMenu(){
+        JFXButton input_line = new JFXButton("Input Data");
+        JFXButton add_series = new JFXButton("Add another series");
+        JFXButton down_line = new JFXButton("Download Data");
+        JFXButton delete_line = new JFXButton("Delete Chart");
+        secondBar.getChildren().setAll(input_line, add_series, down_line, delete_line);
+         FadeTransition fadeIn = new FadeTransition(Duration.millis(500),secondBar);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.play();
         input_line.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
@@ -117,14 +200,17 @@ public class ChartMenu extends Application{
             }
             
         });
-        
-        
-        Menu bar = new Menu("Bar Chart");
-        MenuItem input_bar = new MenuItem("Input Data");
-        MenuItem add_bar = new MenuItem("Add another data");
-        MenuItem down_bar = new MenuItem("Download Data");
-        MenuItem delete_bar = new MenuItem("Delete Chart");
-        bar.getItems().addAll(input_bar, add_bar, down_bar, delete_bar);
+    }
+    static void loadBarMenu(){
+        JFXButton input_bar = new JFXButton("Input Data");
+        JFXButton add_bar = new JFXButton("Add another data");
+        JFXButton down_bar = new JFXButton("Download Data");
+        JFXButton delete_bar = new JFXButton("Delete Chart");
+        secondBar.getChildren().setAll(input_bar,add_bar,down_bar,delete_bar);
+         FadeTransition fadeIn = new FadeTransition(Duration.millis(500),secondBar);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.play();
         input_bar.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
@@ -161,20 +247,20 @@ public class ChartMenu extends Application{
             }
             
         });
-        
-        Menu area = new Menu("Area Chart");
-        Menu bubble = new Menu("Bubble Chart");
-        Menu scatter = new Menu("Scatter Chart");
-        
-        
-        MenuBar menuBar = new MenuBar();
-        menuBar.getMenus().addAll(pie, line, bar, area, bubble, scatter);
-        
-        root.addRow(0, menuBar);
-        root.addRow(1, layout);
-        Scene scene = new Scene(root, 1000, 800);
-        ps.setScene(scene);
-        ps.show();
     }
+    
+    public static void show(Pane root)
+    {
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(500), container);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.setCycleCount(1);
+        fadeIn.play();
+        topContainer.prefWidthProperty().bind(root.getScene().widthProperty());
+        container.prefWidthProperty().bind(root.getScene().widthProperty());
+        root.getChildren().setAll(container);
+        
+    }
+    
     
 }
