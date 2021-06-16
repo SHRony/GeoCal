@@ -16,9 +16,11 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -52,6 +54,8 @@ public class Bar_Chart {
         
         Take_Input();
         layout.getChildren().add(barChart);
+        barChart.prefHeightProperty().bind(GeoCal.scene.heightProperty().subtract(70));
+        barChart.prefWidthProperty().bind(GeoCal.scene.widthProperty());
         on=true;
     }
     
@@ -144,10 +148,19 @@ public class Bar_Chart {
             series.getData().add(new XYChart.Data(X.get(i), new Double(Y.get(i))));
             System.out.println(X.get(i)+"_:_"+new Double(Y.get(i)));
         }
-     
+        
         barChart.getData().add(series);
+        for (final Series<String, Number> sh : barChart.getData()) {
+            for (final XYChart.Data<String, Number> data : sh.getData()) {
+                Tooltip tooltip = new Tooltip();
+                tooltip.setText(data.getXValue().toString() +" "+ 
+                             data.getYValue().toString());
+                Tooltip.install(data.getNode(), tooltip);
+            }
+        }
     }
-    
+
+
     public static void Add()
     {
         if(!on)
