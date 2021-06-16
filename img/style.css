@@ -1,0 +1,108 @@
+.splash{
+-fx-background-image: url("icon.png");
+-fx-background-size: cover;
+-fx-background-position: center center;
+}
+.home{
+    -fx-background-image: url("bg.jpg");
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+}
+.topBar{
+    -fx-background-color: linear-gradient(to bottom right,#00b4d8,#00b4d8,#00b4d8);
+    -fx-opacity: 1;
+    -fx-effect: dropshadow(three-pass-box,black,5,0,0,0);
+}
+
+.graph_back{
+    -fx-background-color: #ffffff;
+}
+.graph_front{
+    -fx-background-color: #ffffff;
+}
+.graphContainer
+{
+   -fx-background-color: white;
+}
+.sideBar{
+    /*-fx-background-image: url("pattern_10.png");*/
+    -fx-background-color: #4cc9f0;
+    -fx-effect: dropshadow(three-pass-box,black,1,0,0,0);
+}
+.sidemenu{
+    -fx-effect: dropshadow(three-pass-box,black,5,0,0,0);
+    -fx-background-color: white;
+}
+.stklist
+{
+    -fx-background-color: white;
+    -fx-border-color: slateblue;
+    -fx-border-radius: 5;
+    -fx-border-width: 3;
+}
+.mainButton{
+    -jfx-button-type: RAISED;
+}
+.jfx-button {
+     -fx-border-color: gray;
+     -fx-border-radius: 5;
+     -fx-border-width: 2;
+     -jfx-button-type: RAISED;
+     -fx-text-fill: white;
+}
+.cMenu{
+    -fx-border-color: #d3d6d9;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+}
+.corBar{
+    
+    -fx-background-color: #03c0c6;
+    -fx-border-color: whitesmoke;
+    -fx-border-width: 3px;
+    -fx-effect: dropshadow(three-pass-box,black,5,0,0,0);
+}
+.corItem{
+    -fx-background-color: #07c5c8;
+    -fx-border-color: white;
+    -fx-border-width: 2px;
+}
+.pop{    
+    -fx-background-image: url("pattern_8.png");
+}
+.submit{
+    -fx-background-color: linear-gradient(to left,#555555,#aaaaaa);
+}
+.jfx-text-field{
+    -jfx-focur-color: skyblue;
+}
+.white
+{
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+.dText
+{
+    -fx-border-radius: 5;
+    -fx-font-weight: bold;
+    -fx-border-width:5;
+    -fx-text-fill:white;
+    -fx-font-size: 17px;
+    -fx-background-color: #07c5c8;
+}
+.details{
+    -fx-border-radius: 5;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(three-pass-box,black,5,0,0,0);
+}
+.itemList{
+    -fx-background-color: #9999ff;
+}
+.picker-color{
+    -fx-border-color: black;
+    -fx-border-width: 1;
+}
+.secondBar{
+    -fx-background-color:#9999ff;
+}
