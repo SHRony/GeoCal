@@ -1,292 +1,205 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package geocal;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import com.jfoenix.controls.JFXButton;
+import java.util.ArrayList;
 import java.util.Vector;
-import java.util.stream.Stream;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.embed.swing.SwingFXUtils;
+import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.PieChart;
-import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.image.WritableImage;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
-import javax.imageio.ImageIO;
+import javafx.util.Duration;
 
 /**
  *
- * @author Lenovo
+ * @author pc
  */
-public class Line_Chart {
-    
-    private static LineChart<String,Number> lineChart;
-    private static int id=1,i;
-    private static Vector<String> X = new Vector<>();
-    private static Vector<String> Y = new Vector<>();
-    private static Vector<String> input = new Vector<>();
-    private static Boolean on = false;
-    
-    public static void line(Pane layout)
-    {
-        if(on)
-        {
-            Add();
-            return;
-        }
-        lineChart = new LineChart(new CategoryAxis(), new NumberAxis());
-        lineChart.getXAxis().setAutoRanging(true);
-        lineChart.getYAxis().setAutoRanging(true);
-        //lineChart.setTitle("Line Chart");
-        Take_Input();
-        layout.getChildren().add(lineChart);
-        on=true;
-    }
-    
-    public static void Take_Input()
-    {
-        Stage window = new Stage();
-        window.setTitle("Give input data");
-
-        Label txt1 = new Label("Item name");
-        Label txt2 = new Label("Value");
-        
-        TextField name = new TextField();
-        name.setPromptText("Enter Item name");
-        
-        TextField value = new TextField();
-        value.setPromptText("Enter value");
-        
-        Button submit = new Button("Finish");
-        Button next = new Button("Next");
-
-        GridPane root = new GridPane();
-        root.addRow(0,txt1,name);
-        root.addRow(1,txt2, value);
-        root.addRow(2,next, submit);
-
-        Scene scene = new Scene(root, 500,200);
-        window.setScene(scene);
-        window.show();
-
-
-        submit.setOnAction(new EventHandler<ActionEvent>() {
-
+public class GraphMenu {
+    public static Vector currentFunctions = new Vector();
+    static GeoPane layout = new GeoPane();
+    static BorderPane container=new BorderPane();
+    static VBox lftBar= new VBox(5);
+    public static void init(Pane root){
+        layout.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        layout.chld.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        HBox ownGraph = new HBox();
+        Label ownLabel=new Label("f(x)= ");
+        JFXButton ownBtn= new JFXButton("Draw");
+        TextField ownField= new TextField();
+        ownGraph.getChildren().addAll(ownLabel,ownField,ownBtn);
+        ownField.setText("Cos (tan(x )  )");
+        JFXButton sinx=new JFXButton("sin(x)");
+        JFXButton cosx= new JFXButton("cos(x)");
+        JFXButton tanx= new JFXButton("tan(x)");
+        JFXButton cotx= new JFXButton("cot(x)");
+        JFXButton secx= new JFXButton("sec(x)");
+        JFXButton cosecx= new JFXButton("cosec(x)");
+        JFXButton log2= new JFXButton("log2(x)");
+        JFXButton log10= new JFXButton("log10(x)");
+        JFXButton ln= new JFXButton("ln(x)");
+        JFXButton sqr= new JFXButton("x^2");
+        JFXButton sqrt= new JFXButton("sqrt(x)");
+        JFXButton cube= new JFXButton("x^3");
+        JFXButton abs= new JFXButton("abs(x)");
+        JFXButton exp= new JFXButton("e^x");     
+        JFXButton clear= new JFXButton("Clear");     
+        JFXButton exit= new JFXButton("Exit");     
+        prepareBtn(sinx);
+        prepareBtn(cosx);
+        prepareBtn(tanx);
+        prepareBtn(cotx);
+        prepareBtn(secx);
+        prepareBtn(cosecx);
+        prepareBtn(log2);
+        prepareBtn(log10);
+        prepareBtn(ln);
+        prepareBtn(sqr);
+        prepareBtn(sqrt);
+        prepareBtn(cube);
+        prepareBtn(abs);
+        prepareBtn(exp);
+        prepareBtn(clear);
+        prepareBtn(exit);
+        lftBar.getChildren().addAll(ownGraph,sinx,cosx,tanx,cotx,secx,cosecx,log2,log10,ln,sqr,sqrt,cube,abs,exp,clear,exit);
+        ownBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent ae) {
-                String s = name.getText();
-                String val = value.getText();
-                
-                if(s==null || s.isEmpty() || val==null || val.isEmpty())
-                {
-                    Alert.display("Erros...!", "Input data is empty!");
-                }
-                else
-                {
-                    name.setText("");
-                    value.setText("");
-                    System.out.println(s+","+val);
-                    X.add(s);
-                    Y.add(val);
-                    input.add(String.format("| %35s |%15s |",s,val));
-                    window.close();
-                    Draw();
-                }
+            public void handle(ActionEvent e) {
+                Graph.Own_graph(layout,ownField.getText());
             }
         });
-        next.setOnAction(new EventHandler<ActionEvent>() {
-
+        sinx.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent ae) {
-                String s = name.getText();
-                String val = value.getText();
-                
-                if(s==null || s.isEmpty() || val==null || val.isEmpty())
-                {
-                    Alert.display("Erros...!", "Input data is empty!");
-                }
-                else
-                {
-                    name.setText("");
-                    value.setText("");
-                    System.out.println(s+","+val);
-                    X.add(s);
-                    Y.add(val);
-                    input.add(String.format("| %35s |%15s |",s,val));
-                    window.close();
-                    window.show();
-                }
+            public void handle(ActionEvent e) {
+                ownField.setText("sin(x)");
             }
         });
-
-
-    }
-    
-    public static void Draw()
-    {
-        XYChart.Series series = new XYChart.Series();
-        series.setName("input: "+(id++));
-        
-        for(int i =0; i<X.size(); i++)
-        {
-            series.getData().add(new XYChart.Data(X.get(i), new Double(Y.get(i))));
-            System.out.println(X.get(i)+"_:_"+new Double(Y.get(i)));
-        }
-     
-        lineChart.getData().add(series);
-    }
-    
-    public static void Add()
-    {
-        if(!on)
-            return;
-        i=0;
-        Stage window = new Stage();
-        window.setTitle("Give input data");
-
-        Label txt1 = new Label("Item name: ");
-        Label txt2 = new Label("Value");
-        
-        Label name = new Label();
-        name.setText(X.get(i++));
-        name.setTextAlignment(TextAlignment.CENTER);
-        
-        
-        TextField value = new TextField();
-        value.setPromptText("Enter value");
-        
-        Button next = new Button("Next");
-
-        GridPane root = new GridPane();
-        root.addRow(0,txt1,name);
-        root.addRow(1,txt2, value);
-        root.addRow(2,next);
-
-        Scene scene = new Scene(root, 500,200);
-        window.setScene(scene);
-        window.show();
-        
-        Y.clear();
- 
-        next.setOnAction(new EventHandler<ActionEvent>() {
-
+        cosx.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent ae) {
-                
-                String val = value.getText();
-                
-                if(val==null || val.isEmpty())
-                {
-                    Alert.display("Erros...!", "Input data is empty!");
-                }
-                else
-                {
-                    value.setText("");
-                    Y.add(val);
-                    input.set(i-1, input.get(i-1)+String.format("%15s |",val));
-                    window.close();
-                    if(i<X.size())
-                    {
-                        name.setText(X.get(i++));
-                        window.show();
-                    }
-                    else
-                    {
-                        Draw();
-                    }
-                }
+            public void handle(ActionEvent e) {
+                ownField.setText("cos(x)");
             }
         });
-        
+        tanx.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                ownField.setText("tan(x)");
+            }
+        });
+        cotx.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                ownField.setText("cot(x)");;
+            }
+        });
+        secx.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                ownField.setText("sec(x)");
+            }
+        });
+        cosecx.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                ownField.setText("cosec(x)");
+            }
+        });
+        sqr.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                ownField.setText("x^2");
+            }
+        });
+        sqrt.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                ownField.setText("sqrt(x)");
+            }
+        });
+        cube.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                ownField.setText("x^3");
+            }
+        });
+        log2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                ownField.setText("log2(x)");
+            }
+        });
+        log10.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                ownField.setText("log10(x)");
+            }
+        });
+        ln.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                ownField.setText("ln(x)");
+            }
+        });
+        abs.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                ownField.setText("abs(x)");
+            }
+        });
+        exp.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                ownField.setText("exp(x)");
+            }
+        });
+         clear.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                for(int i=0;i<currentFunctions.size();i++){
+                    layout.chld.getChildren().remove(currentFunctions.get(i));
+                }
+                currentFunctions.clear();
+            }
+        });
+         exit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent ae) {
+                FadeTransition fadeOut = new FadeTransition(Duration.millis(500), container);
+               fadeOut.setFromValue(1);
+               fadeOut.setToValue(0);
+               fadeOut.setCycleCount(1);
+               fadeOut.play();
+               fadeOut.setOnFinished((e) -> {
+                    HomePage.load(root);
+                });
+            }
+        });
+        container.setCenter(layout);
+        container.setLeft(lftBar);
+        lftBar.getStyleClass().add("sideBar");
     }
-    
-    public static void Delete()
-    {
-        X.clear();
-        Y.clear();
-        input.clear();
-        id=1;
-        if(on)
-        {
-            on=false;
-            ((Pane)lineChart.getParent()).getChildren().remove(lineChart);
-        }
+    static void prepareBtn(JFXButton btn){
+        btn.prefWidthProperty().bind(lftBar.widthProperty());
     }
-    
-    public static void Download() throws IOException
-    {
-        String done="Download Successful";
-        String s = "+-------------------------------------+";
-        String s2= "|-------------------------------------|";
-        String time = new SimpleDateFormat("HHmmss_yyyyMMdd").format(Calendar.getInstance().getTime());
-      
-        //Table making
-        for(int i=1; i<id; i++)
-        {
-            s+= "----------------+";
-            s2+="----------------|";
-        }
-        s+='\n';
-        s2+='\n';
-        String info = s + String.format("| %35s |","Item Name");
-        for(int i=1; i<id; i++)
-        {
-            String ss = "Value "+i;
-            info+=String.format("%15s |",ss);
-        }
-        info+='\n';
-        for(String now : input)
-        {
-            info=info+s2+now+'\n';
-        }
-        info+=s;
-        System.out.println(info);
-        
-        WritableImage image = lineChart.snapshot(new SnapshotParameters(), null);
-        File file = new File(time+"_lineChart.png");
-        
-        try{
-            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-        }
-        catch(IOException e)
-        {
-            Alert.display("Error...", e.toString());
-            done="Error in fine name";
-        }
-        
-        try
-        {
-            FileWriter fw = new FileWriter(time+"_Data.txt");
-            fw.write(info);
-            fw.close();
-        }
-        catch(IOException e)
-        {
-            Alert.display("Error...", e.toString());
-            done="Error in fine name";
-        }
-        System.out.println("Saved...");
-        
-        String f1 = file.getAbsolutePath();
-        String f2 = f1.replace("lineChart.png", "Data.txt");
-        Alert.display(done, "Successfully saved\n"+f1+"\n"+f2);
-        
+    public static void show(Pane root){
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(500),container);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.play();
+        root.getChildren().setAll(container);
     }
 }
