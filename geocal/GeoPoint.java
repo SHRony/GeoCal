@@ -722,9 +722,9 @@ public class GeoPoint extends Circle{
         ContextMenu cMenu = new ContextMenu();
         MenuItem delete = new MenuItem("Remove");
         MenuItem reName = new MenuItem("Rename");
-        Image img = new Image("img/context_clear.jpg");
+        Image img = Assets.image("img/context_clear.jpg");
         delete.setGraphic(new ImageView(img));
-        img = new Image("img/context_rename.png");
+        img = Assets.image("img/context_rename.png");
         reName.setGraphic(new ImageView(img));
         delete.getStyleClass().add("cMenu");
         reName.getStyleClass().add("cMenu");

@@ -38,11 +38,11 @@ public class ChartMenu{
    
         public static void init(Pane root){
         JFXButton home = new JFXButton();
-        Image imgHome = new Image("img/home.png");
+        Image imgHome = Assets.image("img/home.png");
         home.setGraphic(new ImageView (imgHome));
         
         JFXButton pie = new JFXButton();
-        Image imgPie = new Image("img/pie_chart.png");
+        Image imgPie = Assets.image("img/pie_chart.png");
         pie.setGraphic(new ImageView (imgPie));
         MenuItem delete = new MenuItem("Delete Chart");
         
@@ -50,11 +50,11 @@ public class ChartMenu{
         
         
         JFXButton line = new JFXButton();
-        Image imgLine = new Image("img/line_chart.png");
+        Image imgLine = Assets.image("img/line_chart.png");
         line.setGraphic(new ImageView (imgLine));
         
         JFXButton bar = new JFXButton();
-        Image imgBar = new Image("img/bar_chart.png");
+        Image imgBar = Assets.image("img/bar_chart.png");
         bar.setGraphic(new ImageView (imgBar));
         
         topBar.getChildren().addAll(home,pie,line,bar);
@@ -62,7 +62,7 @@ public class ChartMenu{
         
         container.setTop(topContainer);
         topContainer.setAlignment(Pos.CENTER);
-        topContainer.getStylesheets().add("img/style.css");
+        topContainer.getStylesheets().add(Assets.stylesheet("img/style.css"));
         topBar.getStyleClass().add("topBar");
         secondBar.getStyleClass().add("secondBar");
         topBar.prefWidthProperty().bind(topContainer.widthProperty());

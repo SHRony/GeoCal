@@ -34,7 +34,7 @@ public class GeoCal extends Application {
     
     public void start(Stage primaryStage) {
         scene = new Scene(root, 1000, 700);
-        scene.getStylesheets().add("img/style.css");
+        scene.getStylesheets().add(Assets.stylesheet("img/style.css"));
         primaryStage.setMinHeight(600);
         primaryStage.setMinWidth(700);
         //INIT

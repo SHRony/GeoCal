@@ -66,7 +66,7 @@ public class GeoPane extends GridPane{
         this.prefWidthProperty().bind(GeoCal.root.widthProperty());
         Rotate flip = new Rotate(180,X_AXIS);
         chld.getTransforms().add(flip);
-        this.getStylesheets().add("img/style.css");
+        this.getStylesheets().add(Assets.stylesheet("img/style.css"));
         this.getStyleClass().add("graph_back");
         this.chld.getStyleClass().add("graph_front");
         chld.setTranslateX(this.getWidth()/2);

@@ -46,7 +46,7 @@ public class HomePage {
         //Load splash screen
         
         GridPane splash = new GridPane();
-        splash.getStylesheets().add("img/style.css");
+        splash.getStylesheets().add(Assets.stylesheet("img/style.css"));
         splash.getStyleClass().add("splash");
         splash.minHeightProperty().bind(root.getScene().heightProperty());
         splash.minWidthProperty().bind(root.getScene().widthProperty());
@@ -107,12 +107,12 @@ public class HomePage {
         graph.getStyleClass().add("mainButton");
         function.getStyleClass().add("mainButton");
         stat.getStyleClass().add("mainButton");
-        img = new Image("img/graph.png");
+        img = Assets.image("img/graph.png");
         graph.setGraphic(new ImageView (img));
         
-        img = new Image("img/function.png");
+        img = Assets.image("img/function.png");
         function.setGraphic(new ImageView (img));
-        img = new Image("img/stat.png");
+        img = Assets.image("img/stat.png");
         stat.setGraphic(new ImageView (img));
         HBox menu=new HBox(10);
         menu.getChildren().addAll(graph,function,stat);
