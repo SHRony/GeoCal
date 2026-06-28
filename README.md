@@ -6,7 +6,7 @@ A desktop geometry visualization and graphing application built with JavaFX. Dra
 
 ## About
 
-GeoCal is a Java desktop app originally developed as a **two-person team project** for a first-year **Object-Oriented Programming** course (2020–2021). The codebase was later restored with Maven and Java 17 in 2026.
+GeoCal is a Java desktop app originally developed as a **two-person team project** for a first-year **Object-Oriented Programming** course (2020). The codebase was later restored with Maven and Java 17 in 2026.
 
 ## Key features
 
