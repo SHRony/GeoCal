@@ -62,8 +62,6 @@ public class GeoPane extends GridPane{
         Unit.set(1.0/perUnit);
         pUnit.set(perUnit);
         BalanceFactor.set(1);
-        this.prefHeightProperty().bind(GeoCal.root.heightProperty());
-        this.prefWidthProperty().bind(GeoCal.root.widthProperty());
         Rotate flip = new Rotate(180,X_AXIS);
         chld.getTransforms().add(flip);
         this.getStylesheets().add(Assets.stylesheet("img/style.css"));

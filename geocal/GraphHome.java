@@ -6,8 +6,9 @@
 package geocal;
 
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXToggleButton;
+import javafx.scene.control.TabPane;
+import javafx.scene.layout.Priority;
 import static geocal.GeoPoint.st;
 import java.awt.Color;
 import java.io.IOException;
@@ -79,7 +80,7 @@ public class GraphHome {
     static Vector clickedLines = new Vector();
     static int cnt=0;
     static String inp;
-    static JFXTabPane tab = new JFXTabPane();//Tab container in leftbar
+    static TabPane tab = new TabPane();//Tab container in leftbar
     static Tab points,shapes;//Tabs in leftbar
     static Set<Node> Items = new TreeSet<Node>();
     static Vector temporary=new Vector<>();//Vector containing unfinished temporary objects
@@ -178,12 +179,25 @@ public class GraphHome {
         yT.getChildren().add(yCor);
         mouseCor.getChildren().addAll(Title,xT,yT);
         Label oneLabel = new Label("One touch?");
+        oneLabel.getStyleClass().add("white");
         oneLabel.setFont(new Font(20));
         oneLabel.setTextAlignment(TextAlignment.CENTER);
+        Label detailsTitle = new Label("Shape Details");
+        detailsTitle.getStyleClass().add("white");
+        detailsTitle.setFont(new Font(18));
+        detailsBar.getStyleClass().add("details");
+        detailsBar.setMinHeight(120);
+        detailsBar.setPadding(new Insets(5));
+        Label detailsHint = new Label("Click a shape in the list or on the canvas.");
+        detailsHint.getStyleClass().add("dText");
+        detailsHint.setWrapText(true);
+        detailsBar.getChildren().add(detailsHint);
         rightBar.getChildren().add(oneLabel);
         rightBar.getChildren().add(oneTouch);
         rightBar.getChildren().add(mouseCor);
+        rightBar.getChildren().add(detailsTitle);
         rightBar.getChildren().add(detailsBar);
+        VBox.setVgrow(detailsBar, Priority.ALWAYS);
         detailsBar.prefWidthProperty().bind(rightBar.widthProperty().subtract(5));
         container.maxHeightProperty().bind(root.getScene().heightProperty());
         container.maxWidthProperty().bind(root.getScene().widthProperty());
@@ -224,6 +238,9 @@ public class GraphHome {
         shapes = new Tab();
         shapes.setText("Shapes");
         points.setText("Points");
+        shapes.setClosable(false);
+        points.setClosable(false);
+        tab.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         stkBar.getStyleClass().add("itemList");
         stkPt.getStyleClass().add("itemList");
         
@@ -235,8 +252,8 @@ public class GraphHome {
         leftBar.setPrefWidth(200);
         rightBar.setPrefWidth(300);
         leftBar.getChildren().addAll(subMenuBar,tab);
+        VBox.setVgrow(tab, Priority.ALWAYS);
         createMenu(root);
-        tab.prefHeightProperty().bind(gPaper.heightProperty().subtract(subMenuBar.heightProperty()));
         
         //Mouse Clicks
         home.setOnAction(new EventHandler<ActionEvent>(){
@@ -468,6 +485,10 @@ public class GraphHome {
         
         
     }
+    public static void setShapeDetails(Node content) {
+        detailsBar.getChildren().setAll(content);
+    }
+
     public static void show(Pane root)
     {
         

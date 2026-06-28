@@ -680,10 +680,10 @@ public class GeoPoint extends Circle{
     }
     void showDetails()
     {
-        GraphHome.detailsBar.getChildren().clear();
         VBox par = new VBox(10);
         par.setPadding(new Insets(20,2,2,2));
         par.getStyleClass().add("details");
+        par.prefWidthProperty().bind(GraphHome.detailsBar.widthProperty().subtract(10));
         Label type = new Label("Type : Point");
         Label naMe = new Label("Name : ");
         Label ind = new Label("Independent : ");
@@ -704,7 +704,7 @@ public class GeoPoint extends Circle{
         
         
         par.getChildren().addAll(type,naMe,ind,center);
-        GraphHome.detailsBar.getChildren().add(par);
+        GraphHome.setShapeDetails(par);
         
     }
     void addToStack()

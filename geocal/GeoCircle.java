@@ -119,10 +119,10 @@ public class GeoCircle extends Circle{
     }
     void showDetails()
     {
-        GraphHome.detailsBar.getChildren().clear();
         VBox par = new VBox(10);
         par.setPadding(new Insets(20,2,2,2));
         par.getStyleClass().add("details");
+        par.prefWidthProperty().bind(GraphHome.detailsBar.widthProperty().subtract(10));
         Label type = new Label("Type : Circle");
         Label naMe = new Label("Name : ");
         naMe.setText(naMe.getText()+name.getText());
@@ -142,7 +142,7 @@ public class GeoCircle extends Circle{
         
         
         par.getChildren().addAll(type,naMe,center,Radius,Area);
-        GraphHome.detailsBar.getChildren().add(par);
+        GraphHome.setShapeDetails(par);
     }
 //    static void drawCircleRadius(Pane layout)
     static void drawCenterRadius(Pane layout)

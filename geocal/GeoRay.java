@@ -29,6 +29,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
@@ -222,18 +223,18 @@ public class GeoRay extends Line{
     }
     void showDetails()
     {
-        Vector<Node> temp = new Vector<Node>();
-        for (Node component : GraphHome.detailsBar.getChildren()) {
-            temp.add(component);
-        }
-        for(Node component:temp)
-        GraphHome.detailsBar.getChildren().remove(component);
-        GraphHome.detailsBar.getChildren().add(new Label("Segment: "+name.getText()));
-        GraphHome.detailsBar.getChildren().add(new Label("Start:"));
-        GraphHome.detailsBar.getChildren().add(new Label(String.valueOf(sx)+" "+String.valueOf(sy)));
-        GraphHome.detailsBar.getChildren().add(new Label("End:"));
-        GraphHome.detailsBar.getChildren().add(new Label(String.valueOf(ex)+" "+String.valueOf(ey)));
-        
+        VBox par = new VBox(10);
+        par.setPadding(new Insets(20,2,2,2));
+        par.getStyleClass().add("details");
+        par.prefWidthProperty().bind(GraphHome.detailsBar.widthProperty().subtract(10));
+        Label title = new Label("Ray: "+name.getText());
+        Label start = new Label("Start: "+sx+" "+sy);
+        Label end = new Label("End: "+ex+" "+ey);
+        title.getStyleClass().add("dText");
+        start.getStyleClass().add("dText");
+        end.getStyleClass().add("dText");
+        par.getChildren().addAll(title, start, end);
+        GraphHome.setShapeDetails(par);
     }
     void addToStack()
     {
